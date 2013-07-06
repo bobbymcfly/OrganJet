@@ -1,0 +1,216 @@
+<!--
+Bobby Nyotta - June 2013
+OrganJet
+ 
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Organ Jet - Haversine</title>
+    <style>
+      html, body {
+        height: 90%;
+      }
+      #map-canvas {
+        height: 90%;
+        width: 50%;
+      }
+      #results-table {
+        width: "800px";
+      }
+      #results-table thead {
+        height: "30px";
+        background-color:#0099FF; 
+        font:bold 14px Arial, Helvetica, sans-serif;
+        color:#FFFFFF;
+      }
+      #results-table td {
+        vertical-align: top;
+        text-align: center;
+      }
+      #results-table th {
+        text-align: center;
+        width:  
+      }
+      .num {
+        width: 25px;
+      }
+      .dest {
+        width: 250px
+      }
+      .address {
+        width: 500px;
+      }
+      
+    </style>
+  
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8ndKa5KGrRbe6feO4v4M2dODOw8w5_Q0&sensor=false"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script>
+    
+    var oTop25 = new Array()
+        ,oAll = new Array()
+        ,zip_obj = new Object()
+        ,bounds = new google.maps.LatLngBounds()
+        ,markersArray = []
+        ,url_srt = 'http://maps.googleapis.com/maps/api/geocode/json?address='
+        ,url_end = '&sensor=false'
+        ,listTop25 = [{lng:-74.192453,lat:40.7402926,name:'UMDNJ',add:'150 Bergen Street, Newark, NJ 07103'},{lng:-92.4666254,lat:44.0221289,name:'Mayo Clinic',add:'200 1st Street Southwest, Rochester, MN 55905'},{lng:-86.1966037999999,lat:39.910009,name:'St.Vincent Indianapolis Hospital',add:'2001 West 86th Street, Indianapolis, IN 46260'},{lng:-82.384973,lat:36.307673,name:'Johnson City Medical Center',add:'400 North State of Franklin Road, Johnson City, TN 37604'},{lng:-82.342135,lat:29.638744,name:'Shands Hospital, University of Florida',add:'1515 Southwest Archer Road, Gainesville, FL 32608'},{lng:-85.7508071,lat:38.2492717,name:'Jewish Hospital, University of Louisville',add:'200 Abraham Flexner Way, Louisville, KY 40202'},{lng:-111.8921836,lat:40.6592896,name:'Intermountain Medical Center',add:'5121 South Cottonwood Street, Murray, UT 84157'},{lng:-89.4313312,lat:43.0763329,name:'University of Wisconsin Hospital and Clinics',add:'600 Highland Avenue, Madison, WI 53792'},{lng:-122.6969197,lat:45.5302794,name:'Legacy Good Samaritan Medical Center',add:'1015 Northwest 22nd Avenue, Portland, OR 97210'},{lng:-111.836808,lat:40.7716956,name:'University Of Utah Hospital',add:'50 North Medical Drive, Salt Lake City, UT 84112'},{lng:-106.4989669,lat:31.769977,name:'Las Palmas Medical Center',add:'1801 North Oregon Street, El Paso, TX 79902'},{lng:-92.465879,lat:44.0235408,name:'Rochester Methodist Hospital',add:'201 West Center Street, Rochester, MN 55902'},{lng:-90.1703041999999,lat:32.3306919,name:'University of Mississippi Medical Center',add:'2500 North State Street, Jackson, MS 39216'},{lng:-92.3812679999999,lat:34.74398,name:'Baptist Health Medical Center',add:'9601 Interstate 630, Little Rock, AR 72205'},{lng:-92.3219615,lat:34.7500376,name:'UAMS Medical Center',add:'4301 West Markham Street, Little Rock, AR 72205'},{lng:-97.3317589999999,lat:37.7003366,name:'Via Christi St Francis Hospital',add:'929 N St Francis St, Wichita, KS 67214'},{lng:-83.6163207,lat:41.6178782,name:'The University of Toledo Health Science Campus',add:'3000 Arlington Avenue, Toledo, OH 43614'},{lng:-81.3700834,lat:28.576116,name:'Florida Hospital Orlando',add:'601 East Rollins Street, Orlando, FL 32803'},{lng:-84.185228,lat:39.745474,name:'Miami Valley Hospital',add:'1 Wyoming Street, Dayton, OH 45409'},{lng:-93.6336379999999,lat:41.588989,name:'Iowa Health - Des Moines Methodist Hospital',add:'1200 Pleasant Street, Des Moines, IA 50309'},{lng:-85.2446389999999,lat:41.0383289,name:'Lutheran Hospital',add:'7950 West Jefferson Boulevard, Fort Wayne, IN 46804'},{lng:-94.611683,lat:39.0561839999999,name:'The University of Kansas Hospital',add:'3901 Rainbow Boulevard, Kansas City, KS 66160'},{lng:-76.5918063,lat:39.2960365,name:'The Johns Hopkins Hospital',add:'1800 Orleans Street, Baltimore, MD 21287'},{lng:-95.975774,lat:41.2542228,name:'University of Nebraska Medical Center',add:'42nd and Emile Street, Omaha, NE 68198'},{lng:-84.5092758999999,lat:38.0315934,name:'University of Kentucky Medical Center',add:'800 Rose Street, Lexington, KY 40536'},{lng:-72.2723196,lat:43.6728634,name:'Dartmouth Hitchcock Medical Center',add:'1 Medical Center Drive, Lebanon, NH 03766'}]
+        ,listAll = [{lng:-86.802953,lat:33.505601,name:'University of Alabama Hospital',add:'1802 6th Ave S, Birmingham, AL 35233'},{lng:-92.3812679999999,lat:34.74398,name:'Baptist Medical Center',add:'9601 Interstate 630, Little Rock, AR 72205'},{lng:-92.291658,lat:34.743032,name:'Arkansas Children\'s Hospital',add:'800 Marshall Street, Little Rock, AR 72202-3591 '},{lng:-92.3219615,lat:34.7500376,name:'UAMS Medical Center',add:'4301 West Markham Street, Little Rock, AR 72205'},{lng:-112.03999,lat:33.479026,name:'Phoenix Children\'s Hospital, AZ',add:'1919 East Thomas Road, Phoenix, AZ 85006'},{lng:-112.0580578,lat:33.4650649,name:'Banner Good Samaritan Medical Center, AZ',add:'1111 East McDowell Road, Phoenix, AZ 85006, USA'},{lng:-111.9562564,lat:33.6594651,name:'Mayo Clinic Hospital, AZ',add:'5777 East Mayo Boulevard, Phoenix, AZ 85054, USA'},{lng:-111.923872,lat:33.488847,name:'Scottsdale Healthcare Osborn, AZ',add:'7400 East Osborn Road, Scottsdale, AZ 85251, USA'},{lng:-117.276027,lat:34.1349469,name:'Saint Bernardine Medical Center, CA',add:'2101 North Waterman Avenue, San Bernardino, CA 92404, USA'},{lng:-117.151094,lat:32.798937,name:'Rady Children\'s Hospital and Health Center, CA',add:'3020 Children\'s Way, San Diego, CA 92123, USA'},{lng:-118.2904908,lat:34.0979797,name:'Childrens Hospital Los Angeles, CA',add:'4650 West Sunset Boulevard, Los Angeles, CA 90027, USA'},{lng:-118.3809472,lat:34.0736976,name:'Cedars-Sinai Medical Center, CA',add:'8635 West 3rd Street, Los Angeles, CA 90048, USA'},{lng:-117.2429933,lat:32.8968644,name:'Scripps Green Hospital, CA',add:'10666 North Torrey Pines Road, San Diego, CA 92037, USA'},{lng:-117.890264,lat:33.787975,name:'University of California Irvine Medical Center, CA',add:'101 The City Dr S, Orange, CA 92868'},{lng:-118.2911146,lat:33.8304866,name:'Harbor UCLA Medical Center, CA',add:'1000 West Carson Street, Torrance, CA 90502, USA'},{lng:-118.188368,lat:33.779639,name:'St Mary Medical Center, CA',add:'1043 Elm Avenue, Long Beach, CA 90813, USA'},{lng:-117.261288,lat:34.047542,name:'Loma Linda University Medical Center, CA',add:'11370 Anderson Street, Loma Linda, CA 92354'},{lng:-122.175048,lat:37.436358,name:'Lucile Salter Packard Children\'s Hospital at Stanford, CA',add:'725 Welch Road, Palo Alto, CA 94304'},{lng:-122.431769,lat:37.791198,name:'California Pacific Medical Center, CA',add:'2340 Clay Street, San Francisco, CA 94115, USA'},{lng:-117.3818448,lat:33.9765915,name:'Riverside Community Hospital, CA',add:'4445 Magnolia Avenue, Riverside, CA 92501, USA'},{lng:-117.225776,lat:32.878563,name:'University of California San Diego Medical Center, CA',add:'9300 Campus Point Drive, La Jolla, CA 92037'},{lng:-122.4617953,lat:37.7622788,name:'University of California San Francisco Medical Center, CA',add:'505 Parnassus Avenue, San Francisco, CA 94122, USA'},{lng:-121.4385658,lat:38.5705926,name:'Sutter Memorial Hospital, CA',add:'5151 F Street, Sacramento, CA 95819, USA'},{lng:-117.153944,lat:32.799493,name:'Sharp Memorial Hospital, CA',add:'7901 Frost Street, San Diego, CA 92123, USA'},{lng:-124.1424974,lat:40.7833773,name:'Saint Joseph Hospital, CA',add:'2700 Dolbeer Street, Eureka, CA 95501, USA'},{lng:-121.456443,lat:38.5552068,name:'University of California Davis Medical Center, CA',add:'2315 Stockton Boulevard, Sacramento, CA 95817, USA'},{lng:-122.1755086,lat:37.4196126,name:'Stanford University Medical Center, CA',add:'269 Campus Drive, Stanford, CA 94305, USA'},{lng:-118.27347,lat:34.063893,name:'St. Vincent Medical Center, CA',add:'St. Vincent Medical Center, 2131 West 3rd Street, Los Angeles, CA 90057, USA'},{lng:-118.446473,lat:34.064983,name:'University of California at Los Angeles Medical Center, CA',add:'200 Medical Plaza Driveway, Los Angeles, CA'},{lng:-118.2012738,lat:34.0620584,name:'Keck Hospital of USC, CA',add:'Keck Hospital of USC, 1520 San Pablo Street, Los Angeles, CA 90033, USA'},{lng:-104.9662659,lat:39.746917,name:'Presbyterian/St Lukes Medical Center, CO',add:'1719 East 19th Avenue, Denver, CO 80218, USA'},{lng:-72.6794185999999,lat:41.7544392,name:'Hartford Hospital, CT',add:'80 Seymour Street, Hartford, CT 06102, USA'},{lng:-72.9350223,lat:41.3040036,name:'Yale New Haven Hospital, CT',add:'20 York Street, New Haven, CT 06510, USA'},{lng:-77.0743402,lat:38.910535,name:'Georgetown University Medical Center, DC',add:'3800 Reservoir Road Northwest, Washington, DC 20007, USA'},{lng:-75.5552234,lat:39.7793465,name:'Alfred I DuPont Hospital for Children, DE',add:'1600 Rockland Road, Wilmington, DE 19803, USA'},{lng:-75.5497223,lat:39.7510422,name:'Christiana Care Health Services, DE',add:'501 West 14th Street, Wilmington, DE 19801, USA'},{lng:-80.3644949999999,lat:26.081552,name:'Cleveland Clinic Hospital Florida, FL',add:'2950 Cleveland Clinic Blvd, Weston, FL 33331, USA'},{lng:-81.3700834,lat:28.576116,name:'Florida Hospital Medical Center, FL',add:'601 East Rollins Street, Orlando, FL 32803'},{lng:-81.8505991999999,lat:26.5445693,name:'Gulf Coast Medical Center, FL',add:'13681 Doctors Way, Fort Myers, FL 33912, USA'},{lng:-81.0541229,lat:29.2010494,name:'Halifax Medical Center, FL',add:'303 North Clyde Morris Boulevard, Daytona Beach, FL 32114, USA'},{lng:-82.4592716,lat:27.9373986,name:'Tampa General Hospital, FL',add:'1 Tampa General Circle, Tampa, FL 33606, USA'},{lng:-82.342135,lat:29.638744,name:'Shands Hospital at The University of Florida, FL',add:'1515 Southwest Archer Road, Gainesville, FL 32608'},{lng:-84.320212,lat:33.794009,name:'Children\'s Healthcare of Atlanta at Egleston, GA',add:'1405 Clifton Road Northeast, Atlanta, GA 30307'},{lng:-84.386158,lat:33.768098,name:'Emory University Hospital, GA',add:'550 Peachtree Street Northeast, Atlanta, GA 30308'},{lng:-81.989885,lat:33.470909,name:'Georgia Health Sciences Medical Center, GA',add:'1120 15th Street, Augusta, GA 30912'},{lng:-84.395679,lat:33.810025,name:'Piedmont Hospital, GA',add:'1968 Peachtree Road Northwest, Atlanta, GA 30309'},{lng:-155.061105,lat:19.709649,name:'Hawaii Medical Center East, HI',add:'900 Leilani Street, Hilo, HI 96720'},{lng:-93.6336379999999,lat:41.588989,name:'Iowa Methodist Medical Center, IA',add:'1200 Pleasant Street, Des Moines, IA 50309'},{lng:-91.547999,lat:41.660922,name:'University of Iowa Hospitals and Clinics, IA',add:'200 Hawkins Drive, Iowa City, IA 52242'},{lng:-91.540209,lat:41.650525,name:'Iowa City VA Medical Center, IA',add:'601 Highway 6, West Iowa City, IA 52242'},{lng:-93.623443,lat:41.598856,name:'Mercy Medical Center-Des Moines, IA',add:'1111 6th Avenue, Des Moines, IA 50314'},{lng:-87.8537382,lat:41.560579,name:'Advocate Christ Medical Center, IL',add:'18210 La Grange Road, Tinley Park, IL 60487, USA'},{lng:-87.6461298999999,lat:41.9256886,name:'Children\'s Memorial Hospital, IL',add:'707 West Fullerton Avenue, Chicago, IL 60614, USA'},{lng:-87.8341487,lat:41.8613369,name:'Loyola University Medical Center, IL',add:'2160 South 1st Avenue, Maywood, IL 60153, USA'},{lng:-87.6222184,lat:41.8945455,name:'Northwestern Memorial Hospital, IL',add:'251 East Huron Street, Chicago, IL 60611, USA'},{lng:-87.6692739,lat:41.8749717,name:'Rush University Medical Center, IL',add:'1653 West Congress Parkway, Chicago, IL 60612, USA'},{lng:-89.5921031,lat:40.7026434,name:'OSF Saint Francis Medical Center, IL',add:'530 Northeast Glen Oak Avenue, Peoria, IL 61637, USA'},{lng:-87.6020525,lat:41.790873,name:'University of Chicago Medical Center, IL',add:'5841 South Maryland Avenue, Chicago, IL 60637, USA'},{lng:-85.2446389999999,lat:41.0383289,name:'Lutheran Hospital of Fort Wayne, IN',add:'7950 West Jefferson Boulevard, Fort Wayne, IN 46804'},{lng:-86.1966037999999,lat:39.910009,name:'St Vincent Hospital and Health Care Center, IN',add:'2001 West 86th Street, Indianapolis, IN 46260'},{lng:-97.3317589999999,lat:37.7003366,name:'Via Christi Regional Medical Center, St Francis Campus, KS',add:'929 N St Francis St, Wichita, KS 67214'},{lng:-94.611683,lat:39.0561839999999,name:'University of Kansas Hospital, KS',add:'3901 Rainbow Boulevard, Kansas City, KS 66160'},{lng:-85.7508071,lat:38.2492717,name:'Jewish Hospital, KY',add:'200 Abraham Flexner Way, Louisville, KY 40202'},{lng:-85.748988,lat:38.248008,name:'Kosair Children\'s Hospital, KY',add:'231 East Chestnut Street, Louisville, KY 40202'},{lng:-84.5092758999999,lat:38.0315934,name:'University of Kentucky Medical Center, KY',add:'800 Rose Street, Lexington, KY 40536'},{lng:-90.1273009,lat:29.9172962,name:'Children\'s Hospital, LA',add:'200 Henry Clay Avenue, New Orleans, LA 70118, USA'},{lng:-90.9994159,lat:30.4413592,name:'Ochsner Foundation Hospital, LA',add:'17000 Medical Center Drive, Baton Rouge, LA 70816, USA'},{lng:-90.0763065,lat:29.9556302,name:'Tulane Medical Center, LA',add:'1415 Tulane Avenue, New Orleans, LA 70112, USA'},{lng:-93.7783042,lat:32.483954,name:'Willis-Knighton Medical Center, LA',add:'2600 Greenwood Road, Shreveport, LA 71103, USA'},{lng:-71.251241,lat:42.4759819999999,name:'Beth Israel Deaconess Medical Center, MA',add:'Beth Israel Deaconess Medical Center, 482 Bedford Street, Lexington, MA 02420, USA'},{lng:-71.0694056,lat:42.3622666,name:'Massachusetts General Hospital, MA',add:'55 Fruit Street, Boston, MA 02114, USA'},{lng:-71.0649306,lat:42.3505062,name:'Tufts Medical Center, MA',add:'260 Tremont Street #6, Boston, MA 02116, USA'},{lng:-71.1060578,lat:42.3352634,name:'Brigham and Women\'s Hospital, MA',add:'45 Francis Street, Boston, MA 02115, USA'},{lng:-71.7621159999999,lat:42.275876,name:'UMass Memorial Medical Center, MA',add:'55 North Lake Avenue, Worcester, MA 01605, USA'},{lng:-76.5895341,lat:39.2990045,name:'Johns Hopkins Hospital, MD',add:'1800 Orleans Street, Baltimore, MD 21287, USA'},{lng:-76.6219605,lat:39.2864193,name:'University of Maryland Medical System, MD',add:'110 South Paca Street, Baltimore, MD 21201, USA'},{lng:-70.274734,lat:43.65265,name:'Maine Medical Center, ME',add:'22 Bramhall Street, Portland, ME 04102, USA'},{lng:-90.1743813,lat:32.3293123,name:'University of Mississippi Medical Center, MS',add:'2500 North State Street, Jackson, MS 39216, USA'},{lng:-80.271608,lat:36.090619,name:'North Carolina Baptist Hospital, NC',add:'Medical Center Boulevard, Winston Salem, NC 27103'},{lng:-80.8390865,lat:35.203958,name:'Carolinas Medical Center, NC',add:'1000 Blythe Boulevard, Charlotte, NC 28203, USA'},{lng:-78.9371932999999,lat:36.0070013,name:'Duke University Hospital, NC',add:'2301 Erwin Road, Durham, NC 27705, USA'},{lng:-77.404766,lat:35.607262,name:'Vidant Medical Center, NC',add:' 2100 Stantonsburg Road, Greenville, NC 27834, USA'},{lng:-79.0507433,lat:35.9038175,name:'University of North Carolina Hospitals, NC',add:'101 Manning Drive, Chapel Hill, NC 27514, USA'},{lng:-100.782289,lat:46.807977,name:'Medcenter One Health Systems, ND',add:'300 N. Seventh St, Bismarck, ND 58501'},{lng:-96.797687,lat:46.85275,name:'Sanford Medical Center Fargo, ND',add:'1720 South University Drive, Fargo, ND 58103, USA'},{lng:-95.9761865,lat:41.2560347,name:'The Nebraska Medical Center, NE',add:'4350 Dewey Avenue, Omaha, NE 68105, USA'},{lng:-72.2732075,lat:43.673938,name:'Mary Hitchcock Memorial Hospital, NH',add:'1 Medical Center Drive, Lebanon, NH 03766, USA'},{lng:-74.2125883,lat:40.709501,name:'Newark Beth Israel Medical Center, NJ',add:'201 Lyons Avenue, Newark, NJ 07112, USA'},{lng:-74.0566592,lat:40.8840911,name:'Hackensack University Medical Center, NJ',add:'30 Prospect Avenue, Hackensack, NJ 07601, USA'},{lng:-75.0953691,lat:39.926951,name:'Our Lady of Lourdes Medical Center, NJ',add:'1600 Haddon Avenue, Camden, NJ 08103, USA'},{lng:-74.4497964999999,lat:40.4958051,name:'Robert Wood Johnson University Hospital, NJ',add:'1 Robert Wood Johnson Place, New Brunswick, NJ 08901, USA'},{lng:-74.3555526,lat:40.7727347,name:'Saint Barnabas Medical Center, NJ',add:'200 South Orange Avenue, Livingston, NJ 07039, USA'},{lng:-74.192453,lat:40.7402926,name:'University Hospital, NJ',add:'150 Bergen Street, Newark, NJ 07103'},{lng:-106.618404,lat:35.087269,name:'University Hospital, University of New Mexico Health Sciences Center, NM',add:'2211 Lomas Boulevard Northeast, Albuquerque, NM 87106'},{lng:-106.6339197,lat:35.0810167,name:'Presbyterian Hospital, NM',add:'Presbyterian Hospital, 1100 Central Avenue S.E., Albuquerque, NM 87106, USA'},{lng:-115.165584,lat:36.158957,name:'University Medical Center of Southern Nevada, NV',add:'1800 West Charleston Boulevard, Las Vegas, NV 89102'},{lng:-83.6163207,lat:41.6178782,name:'University of Toledo Medical Center, OH',add:'3000 Arlington Avenue, Toledo, OH 43614'},{lng:-84.185228,lat:39.745474,name:'Miami Valley Hospital, OH',add:'1 Wyoming Street, Dayton, OH 45409'},{lng:-122.69692,lat:45.530279,name:'Legacy Good Samaritan Hospital and Medical Center, OR',add:'1015 Northwest 22nd Avenue, Portland, OR 97210'},{lng:-122.685356,lat:45.499653,name:'Oregon Health & Sciences University, OR',add:'3181 Southwest Sam Jackson Park Road, Portland, OR 97239'},{lng:-122.683257,lat:45.496962,name:'Portland Veterans Administration Medical Center, OR',add:'3710 Southwest US Veterans Hospital Road, Portland, OR 97239'},{lng:-66.0533988,lat:18.4098512,name:'Auxilio Mutuo Hospital, PR',add:'San Juan, 00917, Puerto Rico'},{lng:-71.3877918,lat:41.8277256,name:'Rhode Island Hospital, RI',add:'17 Seekonk Street, Providence, RI 02906, USA'},{lng:-79.9477929,lat:32.7856766,name:'Medical University of South Carolina, SC',add:'169 Ashley Avenue, Charleston, SC 29403, USA'},{lng:-96.7114723999999,lat:43.5340123999999,name:'Avera McKennan Hospital, SD',add:'1417 South Cliff Avenue, Sioux Falls, SD 57105, USA'},{lng:-96.743054,lat:43.535622,name:'Sanford Health/USD Medical Center, SD',add:'1305 West 18th Street, Sioux Falls, SD 57105'},{lng:-85.288233,lat:35.050682,name:'Erlanger Medical Center, TN',add:'975 East 3rd Street, Chattanooga, TN 37403'},{lng:-82.384973,lat:36.307673,name:'Johnson City Medical Center Hospital, TN',add:'400 North State of Franklin Road, Johnson City, TN 37604'},{lng:-90.0325079999999,lat:35.145046,name:'Le Bonheur Children\'s Medical Center, TN',add:'50 North Dunlap Street, Memphis, TN 38103, USA'},{lng:-90.0184235999999,lat:35.1367563,name:'Methodist University Hospital, TN',add:'1265 Union Avenue, Memphis, TN 38104, USA'},{lng:-87.0657044,lat:36.2775405,name:'Centennial Medical Center, TN',add:'313 North Main Street, Ashland City, TN 37015, USA'},{lng:-86.8421286999999,lat:36.1287248,name:'Saint Thomas Hospital, TN',add:'4220 Harding Pike, Nashville, TN 37205, USA'},{lng:-83.9432552999999,lat:35.9398478,name:'University of Tennessee Medical Center at Knoxville, TN',add:'1924 Alcoa Highway, Knoxville, TN 37920'},{lng:-86.8000376,lat:36.1445686,name:'Vanderbilt University Medical Center, TN',add:'1161 21st Avenue South, Nashville, TN 37212'},{lng:-86.8048725,lat:36.141841,name:'Nashville Veterans Administration Hospital, TN',add:'1310 24th Avenue S, Nashville, TN 37212'},{lng:-97.3447037,lat:32.7304063,name:'Baylor All Saints Medical Center, TX',add:'1400 8th Avenue, Fort Worth, TX 76104, USA'},{lng:-97.341537,lat:32.736965,name:'Cook Children\'s Medical Center, TX',add:'801 7th Avenue, Fort Worth, TX 76104, USA'},{lng:-98.2119319999999,lat:26.183676,name:'Driscoll Children\'s Hospital, TX',add:'1120 East Ridge Road, McAllen, TX 78503, USA'},{lng:-95.4004132,lat:29.7076716,name:'St Luke\'s Episcopal Hospital, TX',add:'6720 Bertner Avenue, Houston, TX 77030, USA'},{lng:-96.838066,lat:32.811615,name:'The Methodist Hospital, TX',add:'5201 Harry Hines Boulevard, Dallas, TX 75235, USA'},{lng:-98.5902093,lat:29.513028,name:'Parkland Memorial Hospital, TX',add:' 2827 Babcock Road, San Antonio, TX 78229, USA'},{lng:-95.4013903,lat:29.7079063,name:'Texas Children\'s Hospital, TX',add:'6621 Fannin Street, Houston, TX 77030, USA'},{lng:-96.7804369999999,lat:32.789944,name:'Baylor University Medical Center, TX',add:'3500 Gaston Avenue, Dallas, TX 75246, USA'},{lng:-95.2912236,lat:32.3382398,name:'East Texas Medical Center, TX',add:'1000 South Beckham Avenue, Tyler, TX 75701, USA'},{lng:-111.891885,lat:40.6592191,name:'Intermountain Medical Center, UT',add:'5121 South Cottonwood Street, Murray, UT 84157, USA'},{lng:-111.836808,lat:40.7716956,name:'University of Utah Medical Center, UT',add:'50 North Medical Drive, Salt Lake City, UT 84132'},{lng:-111.8383455,lat:40.7707048,name:'Primary Children\'s Medical Center, UT',add:'100 North Mario Capecchi Drive, Salt Lake City, UT 84132, USA'},{lng:-76.3019439,lat:36.8615903,name:'Children\'s Hospital of the King\'s Daughters, VA',add:'601 Childrens Lane, Norfolk, Virginia 23507, USA'},{lng:-77.2270709,lat:38.8579852,name:'Inova Fairfax Hospital, VA',add:'3300 Gallows Road, Falls Church, VA 22042, USA'},{lng:-77.5392873,lat:37.6045913,name:'Henrico Doctors\' Hospital, VA',add:'1602 Skipwith Road, Richmond, VA 23229, USA'},{lng:-77.430144,lat:37.5394,name:'Medical College of Virginia Hospitals, VA',add:'1201 East Marshall Street, Richmond, VA 23298'},{lng:-76.3031285,lat:36.8612781,name:'Sentara Norfolk General Hospital, VA',add:'600 Gresham Drive, Norfolk, VA 23507, USA'},{lng:-78.5245659,lat:38.024625,name:'University of Virginia Health Sciences Center, VA',add:'545 Ray C Hunt Drive, Charlottesville, VA 22903'},{lng:-73.150672,lat:44.448075,name:'Fletcher Allen Health Care, VT',add:'192 Tilley Drive, South Burlington, VT 05403, USA'},{lng:-122.2822311,lat:47.662622,name:'Seattle Children\'s Hospital, WA',add:'4800 Sand Point Way NE, Seattle, WA 98105'},{lng:-117.4126624,lat:47.6484952,name:'Sacred Heart Medical Center, WA',add:'101 West 8th Avenue, Spokane, WA 99204, USA'},{lng:-122.098875,lat:47.6763111,name:'Swedish Medical Center, WA',add:'18100 Northeast Union Hill Road, Redmond, WA 98052, USA'},{lng:-122.3068507,lat:47.6492873,name:'University of Washington Medical Center, WA',add:'1959 NE Pacific St, Seattle, WA 98195'},{lng:-122.0340806,lat:47.5371339,name:'Virginia Mason Medical Center, WA',add:'100 Northeast Gilman Boulevard, Issaquah, WA 98027, USA'},{lng:-88.0229425,lat:43.0416605,name:'Children\'s Hospital of Wisconsin, WI',add:'9000 West Wisconsin Avenue #270, Milwaukee, WI 53226, USA'},{lng:-88.026471,lat:43.041348,name:'Froedtert Memorial Lutheran Hospital, WI',add:'999 N. 92nd Street Milwaukee, WI 53226'},{lng:-87.9502115,lat:42.9897262,name:'Aurora St. Luke\'s Medical Center, WI',add:'2900 West Oklahoma Avenue, Milwaukee, WI 53215, USA'},{lng:-89.4313312,lat:43.0763329,name:'University of Wisconsin Hospital and Clinics, WI',add:'600 Highland Ave, Madison, Wisconsin 53792'},{lng:-81.6041231,lat:38.3290986,name:'Charleston Area Medical Center, WV',add:'3200 Maccorkle Avenue Southeast, Charleston, WV 25304, USA'}]
+        //,destIconS = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=A|12f404|000000'
+        ,destIconS = 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=.9|0|FF0000|11|_|Short'
+        ,destIconA = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=A|12f404|000000'
+
+        ,originIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=O|FFFF00|000000';
+    
+    var map
+        ,geocoder;
+ 
+    function initialize() {
+      var opts = {
+        center: new google.maps.LatLng(39.8282, -98.5795),
+        zoom: 4,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      map = new google.maps.Map(document.getElementById('map-canvas'), opts);
+      geocoder = new google.maps.Geocoder();
+    }
+    
+    function calculateDistances(z) {
+      getCoordFromZip(z);
+      setTimeout(function () {
+        deleteOverlays();
+        console && console.log(zip_obj.lat+','+zip_obj.lng);
+        console && console.log(zip_obj.loc);
+        addMarker(zip_obj.loc, 'o');
+        
+        for (var j = 0; j < listTop25.length; j++) {
+          var tmp=new Object();
+          tmp.name= listTop25[j].name;
+          tmp.add = listTop25[j].add;
+          tmp.lng = listTop25[j].lng;
+          tmp.lat = listTop25[j].lat;
+          tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,listTop25[j].lng,listTop25[j].lat);
+          oTop25.push(tmp);
+        }
+        
+        for (var j = 0; j < listAll.length; j++) {
+          var tmp=new Object();
+          tmp.name= listAll[j].name;
+          tmp.add = listAll[j].add;
+          tmp.lng = listAll[j].lng;
+          tmp.lat = listAll[j].lat;
+          tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,listAll[j].lng,listAll[j].lat);
+          oAll.push(tmp);
+          //console && console.log(tmp.dist_num );
+        }
+        
+        var oTop25_Sort = oTop25.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+        var oAll_Sort = oAll.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+        for(var i=0;i<3;i++) {
+          var tbody = $('#results-table tbody');
+          tbody.append("<tr><td>" + parseInt(i+1) + "</td><td>" + oTop25_Sort[i].name + "</td><td>" + oTop25_Sort[i].add + "</td><td>" + oAll_Sort[i].name + "</td><td>" + oAll_Sort[i].add + "</td></tr>");
+          addMarker(oTop25_Sort[i].add, 's');
+          addMarker(oAll_Sort[i].add, 'a');
+          console && console.log(oTop25_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num);
+        }
+
+        var thead = $('#results-table thead');
+        thead.append("<th class='num'>No.</th><th class='dest'>Destination</th><th class='address'>Address</th><th class='dest'>Destination</th><th class='address'>Address</th>");
+      },1000);
+    }
+    
+    function addMarker(location, isDestination) {
+      var icon;
+      if (isDestination == 's') {
+        icon = destIconS;
+      } else if (isDestination == 'a') {
+        icon = destIconA;
+      } else {
+        icon = originIcon;
+      }
+      
+      geocoder.geocode({'address': location}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          bounds.extend(results[0].geometry.location);
+          map.fitBounds(bounds);
+          var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location,
+            icon: icon
+          });
+          markersArray.push(marker);
+        } else {
+          alert('Geocode was not successful for the following reason: '
+            + status);
+        }
+      });
+    }
+    
+    function deleteOverlays() {
+      oTop25 = new Array();
+      oAll = new Array();
+      $('#results-table thead').empty();
+      $('#results-table tbody').empty();
+      for (var i = 0; i < markersArray.length; i++) {
+        markersArray[i].setMap(null);
+      }
+      markersArray = [];
+    }
+    
+    function haversine(lon1, lat1, lon2, lat2) {
+      var R = 3958.7558657440545 // miles
+        ,dLat = toRad(lat2-lat1)
+        ,dLon = toRad(lon2-lon1)
+        ,lat1 = toRad(lat1)
+        ,lat2 = toRad(lat2);
+ 
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+      return R * c;
+    }
+    
+    // Converts numeric degrees to radians */
+    function toRad(Value) {
+      return Value * Math.PI / 180;
+    }
+    
+    function getCoordFromZip(z) {
+      $.getJSON(url_srt + z + url_end, function(data) {
+        zip_obj.lng=data.results[0].geometry.location.lng;
+        zip_obj.lat=data.results[0].geometry.location.lat;
+        zip_obj.loc=data.results[0].formatted_address;
+      });
+    }
+    
+    google.maps.event.addDomListener(window, 'load', initialize);
+    
+    </script>
+ 
+  </head>
+  
+  <body>
+    <div id="map-canvas"></div>
+    <p>
+      <form>
+        Zip Code: <input id="zip" name="zip" type="text">
+        <input id="execButton" name="buttonExecute" type="button" value="Execute" />
+      </form> 
+    </p>
+    <table id="results-table">
+      <thead>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+ 
+    <script>
+      $('#execButton').on("click", function(){
+        var zip = $('#zip').val();
+        calculateDistances(zip);
+      })
+    </script>
+    
+  </body>
+</html>
