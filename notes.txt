@@ -1,0 +1,57 @@
+Windows PowerShell
+Copyright (C) 2009 Microsoft Corporation. All rights reserved.
+
+C:\Users\Bobby\Documents\GitHub> cd C:\Users\Bobby\Documents\GitHub\OrganJet
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]>
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]>
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]> git remote add 5apps git@5app
+s.com:bobbyn_organjet.git
+fatal: remote 5apps already exists.
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]> git remote
+5apps
+origin
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]> git remote rm 5apps
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]> git remote
+origin
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]> git remote add 5apps git@5app
+s.com:bobbyn_organjet.git
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]> git push 5apps master
+Warning: Permanently added '5apps.com,109.107.37.164' (RSA) to the list of known
+ hosts.
+Counting objects: 9, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (8/8), done.
+Writing objects: 100% (9/9), 9.94 KiB | 0 bytes/s, done.
+Total 9 (delta 1), reused 0 (delta 0)
+remote: -----
+remote: Updating cached copy of the repo...
+remote: done
+remote:
+remote: Checking preconditions...
+remote: done
+remote:
+remote: Queueing deployment...
+remote: done
+remote:
+remote: All good. Follow the progress:
+remote: https://5apps.com/deploy/apps/51d88f4a28852854810001e7/deployments
+remote: -----
+To git@5apps.com:bobbyn_organjet.git
+ * [new branch]      master -> master
+C:\Users\Bobby\Documents\GitHub\OrganJet [master]>
+
+
+
+
+
+
+
+
+
+
+me:  AND i can commit/push to 5apps using the same commands?
+ Dylan:  right, except the commit happened already
+so your workflow would be git commit -m "some commit message"
+then git push origin (pushes to github)
+then git push 5apps master (pushes to 5apps)
+specifically, pushes the master branch to 5apps
