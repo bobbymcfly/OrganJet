@@ -10,19 +10,15 @@ OrganJet
     <link href="bootstrap.css" rel="stylesheet" type="text/css">
     <style>
       html, body {
-        height: 90%;
+        height: 100%;
       }
       #map-canvas {
-        height: 90%;
+        height: 70%;
         width: 50%;
       }
-      #results-table {
-        width: "800px";
-      }
-      #results-table thead {
-        height: "30px";
+      #results-table th {
         background-color:#0099FF; 
-        font:bold 14px Arial, Helvetica, sans-serif;
+        font:bold;
         color:#FFFFFF;
       }
       #results-table td {
@@ -30,6 +26,7 @@ OrganJet
         text-align: center;
       }
       #results-table th {
+        vertical-align: top;
         text-align: center;
         width:  
       }
@@ -42,7 +39,6 @@ OrganJet
       .address {
         width: 350px;
       }
-      
     </style>
   
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8ndKa5KGrRbe6feO4v4M2dODOw8w5_Q0&sensor=false"></script>
@@ -81,10 +77,11 @@ OrganJet
       getCoordFromZip(z);
       setTimeout(function () {
         deleteOverlays();
-        console && console.log(zip_obj.lat+','+zip_obj.lng);
-        console && console.log(zip_obj.loc);
+        //console && console.log(zip_obj.lat+','+zip_obj.lng);
+        //console && console.log(zip_obj.loc);
         addMarker(zip_obj.loc, 'o');
         
+        // find haversine distance b/w each short tx and zip
         for (var j = 0; j < listTop25.length; j++) {
           var tmp=new Object();
           tmp.name= listTop25[j].name;
@@ -96,6 +93,7 @@ OrganJet
           oTop25.push(tmp);
         }
         
+        // find haversine distance b/w each regular tx and zip
         for (var j = 0; j < listAll.length; j++) {
           var tmp=new Object();
           tmp.name= listAll[j].name;
@@ -110,17 +108,17 @@ OrganJet
         
         var oTop25_Sort = oTop25.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
         var oAll_Sort = oAll.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
-        for(var i=0;i<3;i++) {
+        for(var i=0;i<5;i++) {
           var tbody = $('#results-table tbody');
           tbody.append("<tr><td>" + parseInt(i+1) + "</td><td><a href=" + oTop25_Sort[i].web + " target='_blank'>" + oTop25_Sort[i].name + "</a></td><td>" + oTop25_Sort[i].add + "</td><td><a href=" + oAll_Sort[i].web + " target='_blank'>" + oAll_Sort[i].name + "</a></td><td>" + oAll_Sort[i].add + "</td></tr>");
-          console && console.log(tmp.dist_num );
+          //console && console.log(tmp.dist_num );
           addMarker(oTop25_Sort[i].add, 's');
           addMarker(oAll_Sort[i].add, 'a');
-          console && console.log(oTop25_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num);
+          //console && console.log(oTop25_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num);
         }
 
         var thead = $('#results-table thead');
-        thead.append("<th class='num'>No.</th><th class='loc'>Short Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th>");
+        thead.append("<th class='num'>No.</th><th class='loc'>Short Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Closest Transplant Center</th><th class='address'>Address</th>");
         description();
       },1000);
     }
@@ -186,8 +184,8 @@ OrganJet
     // All of the text that comes below the results table is in here. This is not dynamic at all.
     function description() {
       var descrip = $('#description');
-      descrip.append("<p>We have provided the three closest kidney transplant locations with shortest median wait times along with three closest kidney tranplant centers:</p>");
-      descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Blue Pin - Locations of the short wait time transplant centers</li><li>Green Pin - Locations of the regular tranplant centers</li></ul>");
+      descrip.append("<p>We have provided the three closest kidney transplant locations with lowest median wait times along with three closest kidney transplant centers:</p>");
+      descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Blue Pin - Locations of the closest, low wait time transplant centers</li><li>Green Pin - Locations of the closest tranplant centers</li></ul>");
       descrip.append("<p></p>The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.");
       descrip.append("<p></p>OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
     }
@@ -208,12 +206,12 @@ OrganJet
   </head>
   
   <body>
-    <h3 class="offset1">Find a Kidney Transplant Center with a Short Wait Time</h3>
+    <h3 class="offset1">Find a Kidney Transplant Center with a Low Wait Time</h3>
     <div class="span8 offset1" id="map-canvas"></div>
-    <div class="span6 offset3">
+    <div class="span6 offset2">
       <p>
         <form id="zipForm">
-          Enter Your Zip Code: <input id="zip" name="zip" type="text"/> <!--  onkeypress="enterKeyScript(event);" -->
+          Enter Your Zip Code: <input id="zip" name="zip" type="text"/>
           <input id="execButton" name="buttonExecute" type="button" value="Find" class='btn' />
         </form> 
       </p>
