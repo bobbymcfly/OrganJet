@@ -7,6 +7,7 @@ OrganJet
 <html>
   <head>
     <title>Organ Jet</title>
+    <link href="bootstrap.css" rel="stylesheet" type="text/css">
     <style>
       html, body {
         height: 90%;
@@ -205,21 +206,25 @@ OrganJet
   </head>
   
   <body>
-    <h1>Find a Kidney Transplant Center with a Short Wait Time</h1>
-    <div id="map-canvas"></div>
-    <p>
-      <form>
-        Enter Your Zip Code: <input id="zip" name="zip" type="text">
-        <input id="execButton" name="buttonExecute" type="button" value="Find" />
-      </form> 
-    </p>
-    <table id="results-table">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-    
-    <p></p>
-    <p id="description"></p>
+    <h3 class="offset1">Find a Kidney Transplant Center with a Short Wait Time</h3>
+    <div class="span8 offset1" id="map-canvas"></div>
+    <div class="span6 offset3">
+      <p>
+        <form>
+          Enter Your Zip Code: <input id="zip" name="zip" type="text">
+          <input id="execButton" name="buttonExecute" type="button" value="Find" class='btn' />
+        </form> 
+      </p>
+    </div>
+    <div class="span12 offset1">
+      <table id="results-table" class='table table-striped table-bordered table-hover'>
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="span12 offset1 well">
+      <p id="description"></p>
+    </div>
     
     <script>
       $('#execButton').on("click", function(){
