@@ -1,0 +1,39 @@
+html, body {
+  height: 100%;
+}
+.map-container {
+  height: 80%;
+}
+#map-canvas {
+  height: 100%;
+}
+#disclaimer {
+  font-size: small;
+}
+#results-table th {
+  background-color:#0099FF; 
+  font:bold;
+  color:#FFFFFF;
+}
+#results-table td {
+  vertical-align: top;
+  text-align: center;
+  font-size: 85%;
+}
+#results-table th {
+  vertical-align: top;
+  text-align: center;
+  width:  
+}
+.num {
+  width: 20px;
+}
+.loc {
+  width: 550px
+}
+.address {
+  width: 300px;
+}
+#execButton {
+  margin-bottom: 17px
+}
