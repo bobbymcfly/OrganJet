@@ -248,6 +248,8 @@ This file is the main web application. This takes a zip code and finds the neare
         }
       }
       $("#zipForm").submit(function() {
+        console.log('sbumit event');
+        // if(isDone()) { return false };
         var zip = $('#zip').val();
         if (validateZipInput(zip)) {
           calculateDistances(zip);
@@ -255,6 +257,7 @@ This file is the main web application. This takes a zip code and finds the neare
         return false;
       })
       $('#execButton').on("click", function(){
+        // if(isDone()) { return false };
         var zip = $('#zip').val();
         if (validateZipInput(zip)) {
           calculateDistances(zip);
