@@ -20,72 +20,48 @@ $(function(){
   // when the google spreadsheet API is called, these functions are executed.
   var successLow = function(){
     var rows = 0;
-    setTimeout(function(){
-      rows = googleSpreadsheetLow.rows.length;
-    },50);
-    setTimeout(function(){
-      for (i = 0; i < rows; i++) {
-        var tmp=new Object();
-        tmp.name= googleSpreadsheetLow.rows[i][0];
-        tmp.add = googleSpreadsheetLow.rows[i][1]+", "+googleSpreadsheetLow.rows[i][2]+", "+googleSpreadsheetLow.rows[i][3]+" "+googleSpreadsheetLow.rows[i][4];
-        tmp.lng = googleSpreadsheetLow.rows[i][5]
-        tmp.lat = googleSpreadsheetLow.rows[i][6]
-        tmp.web = googleSpreadsheetLow.rows[i][7]
-        ListLow.push(tmp);
-      };
-    },100);
+    rows = googleSpreadsheetLow.rows.length;
+    for (i = 0; i < rows; i++) {
+      var tmp=new Object();
+      tmp.name= googleSpreadsheetLow.rows[i][0];
+      tmp.add = googleSpreadsheetLow.rows[i][1]+", "+googleSpreadsheetLow.rows[i][2]+", "+googleSpreadsheetLow.rows[i][3]+" "+googleSpreadsheetLow.rows[i][4];
+      tmp.lng = googleSpreadsheetLow.rows[i][5]
+      tmp.lat = googleSpreadsheetLow.rows[i][6]
+      tmp.web = googleSpreadsheetLow.rows[i][7]
+      ListLow.push(tmp);
+    };
     buildLow = true;
-    /*
-    setTimeout(function(){
-      console.log(ListLow);
-    },200);
-    */
+    console.log(ListLow);
   };
   var successAll = function(){
     var rows = 0;
-    setTimeout(function(){
-      rows = googleSpreadsheetAll.rows.length;
-    },50);
-    setTimeout(function(){
-      for (i = 0; i < rows; i++) {
-        var tmp=new Object();
-        tmp.name= googleSpreadsheetAll.rows[i][0];
-        tmp.add = googleSpreadsheetAll.rows[i][1]+", "+googleSpreadsheetAll.rows[i][2]+", "+googleSpreadsheetAll.rows[i][3]+" "+googleSpreadsheetAll.rows[i][4];
-        tmp.lng = googleSpreadsheetAll.rows[i][5]
-        tmp.lat = googleSpreadsheetAll.rows[i][6]
-        tmp.web = googleSpreadsheetAll.rows[i][7]
-        ListAll.push(tmp);
-      };
-    },100);
+    rows = googleSpreadsheetAll.rows.length;
+    for (i = 0; i < rows; i++) {
+      var tmp=new Object();
+      tmp.name= googleSpreadsheetAll.rows[i][0];
+      tmp.add = googleSpreadsheetAll.rows[i][1]+", "+googleSpreadsheetAll.rows[i][2]+", "+googleSpreadsheetAll.rows[i][3]+" "+googleSpreadsheetAll.rows[i][4];
+      tmp.lng = googleSpreadsheetAll.rows[i][5]
+      tmp.lat = googleSpreadsheetAll.rows[i][6]
+      tmp.web = googleSpreadsheetAll.rows[i][7]
+      ListAll.push(tmp);
+    };
     buildAll = true;
-    /*
-    setTimeout(function(){
-      console.log(ListAll);
-    },200);
-    */
+    console.log(ListAll);
   };
   var successKid = function(){
     var rows = 0;
-    setTimeout(function(){
-      rows = googleSpreadsheetKid.rows.length;
-    },50);
-    setTimeout(function(){
-      for (i = 0; i < rows; i++) {
-        var tmp=new Object();
-        tmp.name= googleSpreadsheetKid.rows[i][0];
-        tmp.add = googleSpreadsheetKid.rows[i][1]+", "+googleSpreadsheetKid.rows[i][2]+", "+googleSpreadsheetKid.rows[i][3]+" "+googleSpreadsheetKid.rows[i][4];
-        tmp.lng = googleSpreadsheetKid.rows[i][5]
-        tmp.lat = googleSpreadsheetKid.rows[i][6]
-        tmp.web = googleSpreadsheetKid.rows[i][7]
-        ListKid.push(tmp);
-      };
-    },100);
+    rows = googleSpreadsheetKid.rows.length;
+    for (i = 0; i < rows; i++) {
+      var tmp=new Object();
+      tmp.name= googleSpreadsheetKid.rows[i][0];
+      tmp.add = googleSpreadsheetKid.rows[i][1]+", "+googleSpreadsheetKid.rows[i][2]+", "+googleSpreadsheetKid.rows[i][3]+" "+googleSpreadsheetKid.rows[i][4];
+      tmp.lng = googleSpreadsheetKid.rows[i][5]
+      tmp.lat = googleSpreadsheetKid.rows[i][6]
+      tmp.web = googleSpreadsheetKid.rows[i][7]
+      ListKid.push(tmp);
+    };
     buildKid = true;
-    /*
-    setTimeout(function(){
-      console.log(ListKid);
-    },200);
-    */
+    console.log(ListKid);
   };
   var fail = function(){
     console.log("fail");
