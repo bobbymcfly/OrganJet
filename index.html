@@ -174,12 +174,12 @@ This file is the main web application. This takes a zip code and finds the neare
       var descrip = $('#description');
       descrip.append("<p>We have provided the five closest kidney transplant locations with lowest median wait times along with five closest regular and children's transplant centers:</p>");
       descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Blue Pin - Locations of the closest low wait time transplant centers</li><li>Green Pin - Locations of the closest regular transplant centers</li><li>Orange Pin - Locations of the closest children's transplant centers</li></ul>");
-      descrip.append("<p></p>The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.");
-      descrip.append("<p></p>If a geographically close transplant center is also a low wait time transplant center, it will only show up in the 'Low Wait Time' column.");
+      descrip.append("<br />The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.");
+      descrip.append("<br />If a geographically close transplant center is also a low wait time transplant center, it will only show up in the 'Low Wait Time' column.");
       //descrip.append("<p></p>The map in this application is supported by Google Maps Javascript API V3, which has strict usage limits. Querying too many zip codes in a short period of time can cause the application to fail. If this happens, refresh the page.");
-      descrip.append("<p></p>This application was developed and tested with Mozilla Firefox 22.0 and Google Chrome 28.0. For best results, use these browsers and enable JavaScript. We are working on fully supporting other web browsers across various devices.");
+      descrip.append("<br />This application was developed and tested with Mozilla Firefox 22.0 and Google Chrome 28.0. For best results, use these browsers and enable JavaScript. We are working on fully supporting other web browsers across various devices.");
       var disclaim = $('#disclaimer');
-      disclaim.append("<p></p>OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
+      disclaim.append("<br />OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
     }
     
     // Returns the longitude and latitude from a zip code
