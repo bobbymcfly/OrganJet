@@ -106,7 +106,7 @@ This file is the main web application. This takes a zip code and finds the neare
         map.fitBounds(bounds); //zoom based on the LatLngBounds object
         
         var thead = $('#results-table thead');
-        thead.append("<th class='num'>No.</th><th class='loc'>Low Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th><th class='loc'>Children's Transplant Center</th><th class='address'>Address</th>");
+        thead.append("<tr><th class='num'>No.</th><th class='loc'>Low Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th><th class='loc'>Children's Transplant Center</th><th class='address'>Address</th></tr>");
         description();
       },1000);
     }
