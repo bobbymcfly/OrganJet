@@ -63,9 +63,6 @@ $(function(){
     buildKid = true;
     console.log(ListKid);
   };
-  var fail = function(){
-    console.log("fail");
-  };
 
   // this function controls when the form can be submitted.
   window.isDone = function(){
@@ -77,8 +74,8 @@ $(function(){
   };
 
   // making calls to google spreadsheets API
-  window.googleSpreadsheetLow = new GoogleSpreadsheet(urlLow, successLow, fail);
-  window.googleSpreadsheetAll = new GoogleSpreadsheet(urlAll, successAll, fail);
-  window.googleSpreadsheetKid = new GoogleSpreadsheet(urlKid, successKid, fail);
+  window.googleSpreadsheetLow = new GoogleSpreadsheet(urlLow, successLow, setHardCodedListLow);
+  window.googleSpreadsheetAll = new GoogleSpreadsheet(urlAll, successAll, setHardCodedListAll);
+  window.googleSpreadsheetKid = new GoogleSpreadsheet(urlKid, successKid, setHardCodedListKid);
 
 });
