@@ -31,7 +31,7 @@ $(function(){
       ListLow.push(tmp);
     };
     buildLow = true;
-    console.log(ListLow);
+    // console.log(ListLow);
   };
   var successAll = function(){
     var rows = 0;
@@ -46,7 +46,7 @@ $(function(){
       ListAll.push(tmp);
     };
     buildAll = true;
-    console.log(ListAll);
+    // console.log(ListAll);
   };
   var successKid = function(){
     var rows = 0;
@@ -61,7 +61,7 @@ $(function(){
       ListKid.push(tmp);
     };
     buildKid = true;
-    console.log(ListKid);
+    // console.log(ListKid);
   };
 
   // this function controls when the form can be submitted.
