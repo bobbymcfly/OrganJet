@@ -16,6 +16,11 @@ This file is the main web application. This takes a zip code and finds the neare
     <script src="retrieve-data-hardcoded.js"></script>
     <script src="retrieve-data.js"></script>
     
+    <!-- Conflict b/w Bootstrap and Google Maps Info window styles problem, so this fixes it! -->
+    <style type="text/css">
+      img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: none; }
+    </style>
+    
     <script>
     // declare global variables
     var oLow = new Array()
@@ -50,69 +55,71 @@ This file is the main web application. This takes a zip code and finds the neare
       getCoordFromZip(z);
 
       setTimeout(function () { // give getCoordFromZip() 1 second to execute
-        deleteOverlays();
-        //console && console.log(zip_obj.loc+','+zip_obj.lat+','+zip_obj.lng);
-        addMarker(zip_obj.lat, zip_obj.lng, 'o');
-        
-        // find haversine distance b/w each low wait tx and zip
-        for (var j = 0; j < ListLow.length; j++) {
-          var tmp=new Object();
-          tmp.name= ListLow[j].name;
-          tmp.add = ListLow[j].add;
-          tmp.lng = ListLow[j].lng;
-          tmp.lat = ListLow[j].lat;
-          tmp.web = ListLow[j].web;
-          tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListLow[j].lng,ListLow[j].lat);
-          oLow.push(tmp);
+        if ( zip_obj.sta != null ) {
+          deleteOverlays();
+          //console && console.log(zip_obj.loc+','+zip_obj.lat+','+zip_obj.lng);
+          addMarker(zip_obj.lat, zip_obj.lng, 'o','Zip Code: ' + z);
+          
+          // find haversine distance b/w each low wait tx and zip
+          for (var j = 0; j < ListLow.length; j++) {
+            var tmp=new Object();
+            tmp.name= ListLow[j].name;
+            tmp.add = ListLow[j].add;
+            tmp.lng = ListLow[j].lng;
+            tmp.lat = ListLow[j].lat;
+            tmp.web = ListLow[j].web;
+            tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListLow[j].lng,ListLow[j].lat);
+            oLow.push(tmp);
+          }
+          
+          // find haversine distance b/w each regular tx and zip
+          for (var j = 0; j < ListAll.length; j++) {
+            var tmp=new Object();
+            tmp.name= ListAll[j].name;
+            tmp.add = ListAll[j].add;
+            tmp.lng = ListAll[j].lng;
+            tmp.lat = ListAll[j].lat;
+            tmp.web = ListAll[j].web;
+            tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListAll[j].lng,ListAll[j].lat);
+            oAll.push(tmp);
+            // console && console.log(tmp.dist_num );
+          }
+          
+          // find haversine distance b/w each regular tx and zip
+          for (var j = 0; j < ListKid.length; j++) {
+            var tmp=new Object();
+            tmp.name= ListKid[j].name;
+            tmp.add = ListKid[j].add;
+            tmp.lng = ListKid[j].lng;
+            tmp.lat = ListKid[j].lat;
+            tmp.web = ListKid[j].web;
+            tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListKid[j].lng,ListKid[j].lat);
+            oKid.push(tmp);
+            // console && console.log(tmp.dist_num );
+          }
+          
+          var oLow_Sort = oLow.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+          var oAll_Sort = oAll.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+          var oKid_Sort = oKid.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+          for(var i=0; i<numOfLoc; i++) {
+            var tbody = $('#results-table tbody');
+            tbody.append("<tr><td>" + parseInt(i+1) + "</td><td><a href=" + oLow_Sort[i].web + " target='_blank'>" + oLow_Sort[i].name + "</a></td><td>" + oLow_Sort[i].add + "</td><td><a href=" + oAll_Sort[i].web + " target='_blank'>" + oAll_Sort[i].name + "</a></td><td>" + oAll_Sort[i].add + "</td><td><a href=" + oKid_Sort[i].web + " target='_blank'>" + oKid_Sort[i].name + "</a></td><td>" + oKid_Sort[i].add + "</td></tr>");
+            addMarker(oLow_Sort[i].lat, oLow_Sort[i].lng, 'l', oLow_Sort[i].name);
+            addMarker(oAll_Sort[i].lat, oAll_Sort[i].lng, 'r', oAll_Sort[i].name);
+            addMarker(oKid_Sort[i].lat, oKid_Sort[i].lng, 'c', oKid_Sort[i].name);
+            // console && console.log(oLow_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num + ' ' + oKid_Sort[i].dist_num);
+          }
+          map.fitBounds(bounds); //zoom based on the LatLngBounds object
+          
+          var thead = $('#results-table thead');
+          thead.append("<tr><th class='num'>No.</th><th class='loc'>Low Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th><th class='loc'>Children's Transplant Center</th><th class='address'>Address</th></tr>");
+          description();
         }
-        
-        // find haversine distance b/w each regular tx and zip
-        for (var j = 0; j < ListAll.length; j++) {
-          var tmp=new Object();
-          tmp.name= ListAll[j].name;
-          tmp.add = ListAll[j].add;
-          tmp.lng = ListAll[j].lng;
-          tmp.lat = ListAll[j].lat;
-          tmp.web = ListAll[j].web;
-          tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListAll[j].lng,ListAll[j].lat);
-          oAll.push(tmp);
-          // console && console.log(tmp.dist_num );
-        }
-        
-        // find haversine distance b/w each regular tx and zip
-        for (var j = 0; j < ListKid.length; j++) {
-          var tmp=new Object();
-          tmp.name= ListKid[j].name;
-          tmp.add = ListKid[j].add;
-          tmp.lng = ListKid[j].lng;
-          tmp.lat = ListKid[j].lat;
-          tmp.web = ListKid[j].web;
-          tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListKid[j].lng,ListKid[j].lat);
-          oKid.push(tmp);
-          // console && console.log(tmp.dist_num );
-        }
-        
-        var oLow_Sort = oLow.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
-        var oAll_Sort = oAll.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
-        var oKid_Sort = oKid.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
-        for(var i=0; i<numOfLoc; i++) {
-          var tbody = $('#results-table tbody');
-          tbody.append("<tr><td>" + parseInt(i+1) + "</td><td><a href=" + oLow_Sort[i].web + " target='_blank'>" + oLow_Sort[i].name + "</a></td><td>" + oLow_Sort[i].add + "</td><td><a href=" + oAll_Sort[i].web + " target='_blank'>" + oAll_Sort[i].name + "</a></td><td>" + oAll_Sort[i].add + "</td><td><a href=" + oKid_Sort[i].web + " target='_blank'>" + oKid_Sort[i].name + "</a></td><td>" + oKid_Sort[i].add + "</td></tr>");
-          addMarker(oLow_Sort[i].lat, oLow_Sort[i].lng, 'l');
-          addMarker(oAll_Sort[i].lat, oAll_Sort[i].lng, 'r');
-          addMarker(oKid_Sort[i].lat, oKid_Sort[i].lng, 'c');
-          // console && console.log(oLow_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num + ' ' + oKid_Sort[i].dist_num);
-        }
-        map.fitBounds(bounds); //zoom based on the LatLngBounds object
-        
-        var thead = $('#results-table thead');
-        thead.append("<tr><th class='num'>No.</th><th class='loc'>Low Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th><th class='loc'>Children's Transplant Center</th><th class='address'>Address</th></tr>");
-        description();
       },1000);
     }
     
     // adds markers to the map
-    function addMarker(lat, lng, isDestination) {
+    function addMarker(lat, lng, isDestination, info) {
       var icon;
       if (isDestination == 'l') {        // low-wait
         icon = destIconL;
@@ -127,10 +134,19 @@ This file is the main web application. This takes a zip code and finds the neare
       var marker = new google.maps.Marker({
         map: map,
         position: new google.maps.LatLng(lat, lng), 
-        icon: icon
+        icon: icon,
+        title: info
       });
-      markersArray.push(marker);
       
+      // add pop-up window to markers that works on click
+      marker.infowindow = new google.maps.InfoWindow({
+        content: info
+      });
+      google.maps.event.addListener(marker, 'click', function() {
+        marker.infowindow.open(map, marker);
+      });
+      
+      markersArray.push(marker); // add marker to array
       bounds.extend(new google.maps.LatLng(lat, lng)); // add marker location to bounds object (for zoom)
     }
     
@@ -183,13 +199,29 @@ This file is the main web application. This takes a zip code and finds the neare
     }
     
     // Returns the longitude and latitude from a zip code
+    // Also contains some validation
     function getCoordFromZip(z) {
       $.getJSON(url_srt + z + url_end, function(data) {
-        zip_obj.lng=data.results[0].geometry.location.lng;
-        zip_obj.lat=data.results[0].geometry.location.lat;
-        zip_obj.loc=data.results[0].formatted_address;
+        if (data.status != "OK") { // make sure zip code is valid
+          zip_obj.lng=null;
+          zip_obj.lat=null;
+          zip_obj.loc=null;
+          zip_obj.sta=null;
+          alert("The Zip Code Entered Is Unknown. Try The Zip Code Again Or Try A Different Zip Code.");
+        } else if (data.results[0].formatted_address.contains("USA")==false) { // make sure zip code is in the USA
+          zip_obj.lng=null;
+          zip_obj.lat=null;
+          zip_obj.loc=null;
+          zip_obj.sta=null;
+          alert("The Zip Code Entered Is Not in the USA. Try A Different Zip Code.");
+        } else {
+          zip_obj.lng=data.results[0].geometry.location.lng;
+          zip_obj.lat=data.results[0].geometry.location.lat;
+          zip_obj.loc=data.results[0].formatted_address;
+          zip_obj.sta=data.status;
+        }
       });
-    }
+    } 
     
     google.maps.event.addDomListener(window, 'load', initialize);
     
@@ -235,21 +267,20 @@ This file is the main web application. This takes a zip code and finds the neare
         } else if (z.match(/^[0-9]+$/) == null) {
           alert("Zip Code Can Only Contain Digits");
           return false;
-        }
-        else {
+        } else {
           return true;
         }
       }
+
       $("#zipForm").submit(function() {
-        //if (isDone()==false) { return false };
         var zip = $('#zip').val();
         if (validateZipInput(zip)) {
           calculateDistances(zip);
         }
         return false;
       })
+      
       $('#execButton').on("click", function(){
-        //if (isDone()==false) { return false };
         var zip = $('#zip').val();
         if (validateZipInput(zip)) {
           calculateDistances(zip);
