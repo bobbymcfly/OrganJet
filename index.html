@@ -14,8 +14,8 @@ This file is the main web application. This takes a zip code and finds the neare
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     <script src="google-spreadsheet-util.js"></script>
     <script src="retrieve-data-hardcoded.js"></script>
-    <script src="retrieve-data.js"></script>
-    
+    <!--<script src="retrieve-data.js"></script> -->
+        
     <!-- Conflict b/w Bootstrap and Google Maps Info window styles problem, so this fixes it! -->
     <style type="text/css">
       img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: none; }
@@ -100,6 +100,7 @@ This file is the main web application. This takes a zip code and finds the neare
           
           var oLow_Sort = oLow.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
           var oAll_Sort = oAll.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+          console.log(oAll_Sort);
           var oKid_Sort = oKid.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
           for(var i=0; i<numOfLoc; i++) {
             var tbody = $('#results-table tbody');
