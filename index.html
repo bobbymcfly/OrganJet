@@ -208,7 +208,7 @@ This file is the main web application. This takes a zip code and finds the neare
           zip_obj.loc=null;
           zip_obj.sta=null;
           alert("The Zip Code Entered Is Unknown. Try The Zip Code Again Or Try A Different Zip Code.");
-        } else if (data.results[0].formatted_address.contains("USA")==false) { // make sure zip code is in the USA
+        } else if (!data.results[0].formatted_address.indexOf("USA") === -1) { // make sure zip code is in the USA
           zip_obj.lng=null;
           zip_obj.lat=null;
           zip_obj.loc=null;
