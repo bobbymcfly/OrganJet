@@ -202,27 +202,27 @@ This file is the main web application. This takes a zip code and finds the neare
     // Returns the longitude and latitude from a zip code
     // Also contains some validation
     function getCoordFromZip(z) {
-      $.getJSON(url_srt + z + url_end, function(data) {
-        if (data.status != "OK") { // make sure zip code is valid
+      geocoder.geocode( { 'address': z}, function(results, status) {
+        if (status != "OK") { // make sure zip code is valid
           zip_obj.lng=null;
           zip_obj.lat=null;
           zip_obj.loc=null;
           zip_obj.sta=null;
           alert("The Zip Code Entered Is Unknown. Try The Zip Code Again Or Try A Different Zip Code.");
-        } else if (data.results[0].formatted_address.search("USA") === -1) { // make sure zip code is in the USA
+        } else if (results[0].formatted_address.search("USA") === -1) { // make sure zip code is in the USA
           zip_obj.lng=null;
           zip_obj.lat=null;
           zip_obj.loc=null;
           zip_obj.sta=null;
           alert("The Zip Code Entered Is Not in the USA. Try A Different Zip Code.");
         } else {
-          zip_obj.lng=data.results[0].geometry.location.lng;
-          zip_obj.lat=data.results[0].geometry.location.lat;
-          zip_obj.loc=data.results[0].formatted_address;
-          zip_obj.sta=data.status;
+          zip_obj.lng=results[0].geometry.location.lng();
+          zip_obj.lat=results[0].geometry.location.lat();
+          zip_obj.loc=results[0].formatted_address;
+          zip_obj.sta=status;
         }
       });
-    } 
+    }
     
     google.maps.event.addDomListener(window, 'load', initialize);
     
