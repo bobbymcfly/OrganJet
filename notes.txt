@@ -40,18 +40,14 @@ To git@5apps.com:bobbyn_organjet.git
  * [new branch]      master -> master
 C:\Users\Bobby\Documents\GitHub\OrganJet [master]>
 
+----- general workflow
 
-
-
-
-
-
-
-
-
-me:  AND i can commit/push to 5apps using the same commands?
  Dylan:  right, except the commit happened already
 so your workflow would be git commit -m "some commit message"
 then git push origin (pushes to github)
 then git push 5apps master (pushes to 5apps)
 specifically, pushes the master branch to 5apps
+
+---- adding ssh key to ssh agent
+
+ssh-add ~/.ssh/id_rsa

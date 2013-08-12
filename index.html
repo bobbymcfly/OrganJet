@@ -100,8 +100,8 @@ This file is the main web application. This takes a zip code and finds the neare
           
           var oLow_Sort = oLow.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
           var oAll_Sort = oAll.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
-          console.log(oAll_Sort);
           var oKid_Sort = oKid.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
+
           for(var i=0; i<numOfLoc; i++) {
             var tbody = $('#results-table tbody');
             tbody.append("<tr><td>" + parseInt(i+1) + "</td><td><a href=" + oLow_Sort[i].web + " target='_blank'>" + oLow_Sort[i].name + "</a></td><td>" + oLow_Sort[i].add + "</td><td><a href=" + oAll_Sort[i].web + " target='_blank'>" + oAll_Sort[i].name + "</a></td><td>" + oAll_Sort[i].add + "</td><td><a href=" + oKid_Sort[i].web + " target='_blank'>" + oKid_Sort[i].name + "</a></td><td>" + oKid_Sort[i].add + "</td></tr>");
