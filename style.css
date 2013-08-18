@@ -37,3 +37,12 @@ html, body {
 #execButton {
   margin-bottom: 13px
 }
+#legend {
+  font-size:small;
+  background: white;
+  padding: 10px;
+  
+}
+#content{
+    height: 100px;
+}

@@ -20,7 +20,7 @@ This file is the main web application. This takes a zip code and finds the neare
     <style type="text/css">
       img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: none; }
     </style>
-    
+
     <script>
     // declare global variables
     var oLow = new Array()
@@ -31,14 +31,15 @@ This file is the main web application. This takes a zip code and finds the neare
         ,markersArray = []
         ,url_srt = 'http://maps.googleapis.com/maps/api/geocode/json?address='
         ,url_end = '&sensor=false'
-        ,destIconL = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=L|63D1F4|000000'
-        ,destIconR = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=R|12f404|000000'
+        ,destIconL = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=L|12f404|000000'
+        ,destIconR = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=R|63D1F4|000000'
         ,destIconC = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=C|FFAA00|000000'
         ,originIcon = 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=.75|0|FFFF00|11|_|O'
-        ,numOfLoc = 5;
-    var map
-        ,geocoder; 
+        ,numOfLoc = 5
+        ,legendDiv = document.createElement('DIV');
         
+    var map
+        ,geocoder;
     // creates map
     function initialize() {
       var opts = {
@@ -47,7 +48,7 @@ This file is the main web application. This takes a zip code and finds the neare
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
       map = new google.maps.Map(document.getElementById('map-canvas'), opts);
-      geocoder = new google.maps.Geocoder();
+      geocoder = new google.maps.Geocoder();      
     }
     
     // returns closest 5 locations from each list and puts it into the table
@@ -58,7 +59,7 @@ This file is the main web application. This takes a zip code and finds the neare
         if ( zip_obj.sta != null ) {
           deleteOverlays();
           //console && console.log(zip_obj.loc+','+zip_obj.lat+','+zip_obj.lng);
-          addMarker(zip_obj.lat, zip_obj.lng, 'o','Zip Code: ' + z);
+          addMarker(zip_obj, 'o');
           
           // find haversine distance b/w each low wait tx and zip
           for (var j = 0; j < ListLow.length; j++) {
@@ -105,9 +106,9 @@ This file is the main web application. This takes a zip code and finds the neare
           for(var i=0; i<numOfLoc; i++) {
             var tbody = $('#results-table tbody');
             tbody.append("<tr><td>" + parseInt(i+1) + "</td><td><a href=" + oLow_Sort[i].web + " target='_blank'>" + oLow_Sort[i].name + "</a></td><td>" + oLow_Sort[i].add + "</td><td><a href=" + oAll_Sort[i].web + " target='_blank'>" + oAll_Sort[i].name + "</a></td><td>" + oAll_Sort[i].add + "</td><td><a href=" + oKid_Sort[i].web + " target='_blank'>" + oKid_Sort[i].name + "</a></td><td>" + oKid_Sort[i].add + "</td></tr>");
-            addMarker(oLow_Sort[i].lat, oLow_Sort[i].lng, 'l', oLow_Sort[i].name);
-            addMarker(oAll_Sort[i].lat, oAll_Sort[i].lng, 'r', oAll_Sort[i].name);
-            addMarker(oKid_Sort[i].lat, oKid_Sort[i].lng, 'c', oKid_Sort[i].name);
+            addMarker(oLow_Sort[i], 'l');
+            addMarker(oAll_Sort[i], 'r');
+            addMarker(oKid_Sort[i], 'c');
             // console && console.log(oLow_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num + ' ' + oKid_Sort[i].dist_num);
           }
           map.fitBounds(bounds); //zoom based on the LatLngBounds object
@@ -115,12 +116,19 @@ This file is the main web application. This takes a zip code and finds the neare
           var thead = $('#results-table thead');
           thead.append("<tr><th class='num'>No.</th><th class='loc'>Low Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th><th class='loc'>Children's Transplant Center</th><th class='address'>Address</th></tr>");
           description();
+          
+          // Create the legend and display on the map
+          legendDiv = document.createElement('DIV'); 
+          legend(legendDiv);
+          legendDiv.index = 1;
+          map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendDiv);
+          
         }
       },1000);
     }
     
     // adds markers to the map
-    function addMarker(lat, lng, isDestination, info) {
+    function addMarker(obj, isDestination) {
       var icon;
       if (isDestination == 'l') {        // low-wait
         icon = destIconL;
@@ -134,21 +142,23 @@ This file is the main web application. This takes a zip code and finds the neare
       // add markers using lat/lng
       var marker = new google.maps.Marker({
         map: map,
-        position: new google.maps.LatLng(lat, lng), 
+
+        position: new google.maps.LatLng(obj.lat, obj.lng), 
         icon: icon,
-        title: info
+        title: obj.name
       });
       
       // add pop-up window to markers that works on click
       marker.infowindow = new google.maps.InfoWindow({
-        content: info
+        content: "<div id='content'><style='font-size:12px;>" + "<a href='" + obj.web + "' target='_blank' >" + obj.name + "</a><br>" + obj.add + "</></div>"
+        ,maxWidth: 0
       });
       google.maps.event.addListener(marker, 'click', function() {
         marker.infowindow.open(map, marker);
       });
       
       markersArray.push(marker); // add marker to array
-      bounds.extend(new google.maps.LatLng(lat, lng)); // add marker location to bounds object (for zoom)
+      bounds.extend(new google.maps.LatLng(obj.lat, obj.lng)); // add marker location to bounds object (for zoom)
     }
     
     // clears map of pins; clears table and text
@@ -161,6 +171,7 @@ This file is the main web application. This takes a zip code and finds the neare
       $('#results-table tbody').empty();
       $('#description').empty();
       $('#disclaimer').empty();
+      legendDiv.remove();
       for (var i = 0; i < markersArray.length; i++) {
         markersArray[i].setMap(null);
       }
@@ -190,13 +201,55 @@ This file is the main web application. This takes a zip code and finds the neare
     function description() {
       var descrip = $('#description');
       descrip.append("<p>We have provided the five closest kidney transplant locations with lowest median wait times along with five closest regular and children's transplant centers:</p>");
-      descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Blue Pin - Locations of the closest low wait time transplant centers</li><li>Green Pin - Locations of the closest regular transplant centers</li><li>Orange Pin - Locations of the closest children's transplant centers</li></ul>");
-      descrip.append("<br />The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.");
+      descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Green Pin - Locations of the closest low wait time transplant centers</li><li>Blue Pin - Locations of the closest regular transplant centers</li><li>Orange Pin - Locations of the closest children's transplant centers</li></ul>");
+      descrip.append("<p>Information about 'Low Wait Time' centers:</p>");
+      descrip.append("<ul><li>Transplant centers whose median wait times are well below (40% or more) the national median are called 'low wait time' centers. This median is computed based on data across various blood types. Please note that actual times for a patient can be significantly different (lower or higher) from median times.</li>" +
+      "<li>No distinction is made between centers that have median wait time of 19 months versus those that have 23 months. All centers listed in the 'low wait' column have median times lower than 26 months when the last SRTR report came out.</li>" +
+      "<li>If a center in the low wait time category (Column 1) is also within 5 closest centers from an input ZIP code, then the column (Column 2) that has 'closest (regular) centers' will have the 6th closest one in that column (and so on). That is, the list on column 1 is mutually exclusive from list in column 2.</li>" +
+      "<li>We have only selected centers in 'low wait times' that also have sufficiently high volumes and have satisfactory outcomes (using Observed/Expected ratio criteria).</li></ul>");
+      
+      descrip.append("The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.");
       descrip.append("<br />If a geographically close transplant center is also a low wait time transplant center, it will only show up in the 'Low Wait Time' column.");
-      //descrip.append("<p></p>The map in this application is supported by Google Maps Javascript API V3, which has strict usage limits. Querying too many zip codes in a short period of time can cause the application to fail. If this happens, refresh the page.");
-      descrip.append("<br />This application was developed and tested with Mozilla Firefox 22.0 and Google Chrome 28.0. For best results, use these browsers and enable JavaScript. We are working on fully supporting other web browsers across various devices.");
+      descrip.append("<br />VA hospitals are not included in our lists. Information about VA centers can be found <a href='http://www.va.gov/TRANSPLANT/' target='_blank'>here</a>.");
+      descrip.append("<br />The map in this application is supported by Google Maps Javascript API V3, which has strict usage limitations.");// Querying too many zip codes in a short period of time can cause the application to fail. If this happens, refresh the page.");
+      descrip.append("<br />'Distance' is computed through a heuristic formula that uses latitude and longitude information. (That is, this is not driving distance found on Google Maps, Yahoo! Maps, or MapQuest.)"); 
+      //descrip.append("<br />This application was developed and tested with Mozilla Firefox 22.0 and Google Chrome 28.0. For best results, use these browsers and enable JavaScript. We are working on fully supporting other web browsers across various devices.");
+      
       var disclaim = $('#disclaimer');
-      disclaim.append("<br />OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
+      disclaim.append("OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
+    }
+
+    // adding legend to the map
+    function legend(controlDiv) {
+      // Set CSS styles for the DIV containing the control
+      // Setting padding to 5 px will offset the control
+      // from the edge of the map
+      controlDiv.style.padding = '5px';
+
+      // Set CSS for the control border
+      var controlUI = document.createElement('DIV');
+      controlUI.style.backgroundColor = 'white';
+      controlUI.style.opacity = '0.75';
+      controlUI.style.borderStyle = 'solid';
+      controlUI.style.borderWidth = '1px';
+      controlUI.title = 'Legend';
+
+      // Set CSS for the control text
+      var controlText = document.createElement('DIV');
+      controlText.style.fontFamily = 'Arial,sans-serif';
+      controlText.style.fontSize = '12px';
+      controlText.style.paddingTop = '4px';
+      controlText.style.paddingLeft = '4px';
+      controlText.style.paddingRight = '4px';
+      
+      // Add the text
+      controlText.innerHTML = '<p style="text-align:center;line-height:75%"><b>LEGEND</b></p>' +
+        '<p><img src="' + destIconL + '" />' + '  Low-Wait Center</p>' +
+        '<p><img src="' + destIconR + '" />' + '  Regular Center</p>' +
+        '<p><img src="' + destIconC + '" />' + '  Childrens Center</p>';
+      
+      controlUI.appendChild(controlText);
+      controlDiv.appendChild(controlUI);
     }
     
     // Returns the longitude and latitude from a zip code
@@ -204,21 +257,24 @@ This file is the main web application. This takes a zip code and finds the neare
     function getCoordFromZip(z) {
       geocoder.geocode( { 'address': z}, function(results, status) {
         if (status != "OK") { // make sure zip code is valid
+          zip_obj.name=null;
+          zip_obj.add=null;
           zip_obj.lng=null;
           zip_obj.lat=null;
-          zip_obj.loc=null;
           zip_obj.sta=null;
           alert("The Zip Code Entered Is Unknown. Try The Zip Code Again Or Try A Different Zip Code.");
         } else if (results[0].formatted_address.search("USA") === -1) { // make sure zip code is in the USA
+          zip_obj.name=null;
+          zip_obj.add=null;
           zip_obj.lng=null;
           zip_obj.lat=null;
-          zip_obj.loc=null;
           zip_obj.sta=null;
           alert("The Zip Code Entered Is Not in the USA. Try A Different Zip Code.");
         } else {
+          zip_obj.name=z;
+          zip_obj.add=results[0].formatted_address;;
           zip_obj.lng=results[0].geometry.location.lng();
           zip_obj.lat=results[0].geometry.location.lat();
-          zip_obj.loc=results[0].formatted_address;
           zip_obj.sta=status;
         }
       });
