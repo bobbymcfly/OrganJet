@@ -37,9 +37,12 @@ This file is the main web application. This takes a zip code and finds the neare
         ,originIcon = 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=.75|0|FFFF00|11|_|O'
         ,numOfLoc = 5
         ,legendDiv = document.createElement('DIV');
-        
+    
+    legendDiv.id = "legend";
+    
     var map
         ,geocoder;
+        
     // creates map
     function initialize() {
       var opts = {
@@ -48,7 +51,8 @@ This file is the main web application. This takes a zip code and finds the neare
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
       map = new google.maps.Map(document.getElementById('map-canvas'), opts);
-      geocoder = new google.maps.Geocoder();      
+      geocoder = new google.maps.Geocoder();
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendDiv);
     }
     
     // returns closest 5 locations from each list and puts it into the table
@@ -118,11 +122,7 @@ This file is the main web application. This takes a zip code and finds the neare
           description();
           
           // Create the legend and display on the map
-          legendDiv = document.createElement('DIV'); 
-          legend(legendDiv);
-          legendDiv.index = 1;
-          map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendDiv);
-          
+          legend();
         }
       },1000);
     }
@@ -142,7 +142,6 @@ This file is the main web application. This takes a zip code and finds the neare
       // add markers using lat/lng
       var marker = new google.maps.Marker({
         map: map,
-
         position: new google.maps.LatLng(obj.lat, obj.lng), 
         icon: icon,
         title: obj.name
@@ -171,7 +170,8 @@ This file is the main web application. This takes a zip code and finds the neare
       $('#results-table tbody').empty();
       $('#description').empty();
       $('#disclaimer').empty();
-      legendDiv.remove();
+      $('#legend').empty();
+      
       for (var i = 0; i < markersArray.length; i++) {
         markersArray[i].setMap(null);
       }
@@ -220,36 +220,24 @@ This file is the main web application. This takes a zip code and finds the neare
     }
 
     // adding legend to the map
-    function legend(controlDiv) {
-      // Set CSS styles for the DIV containing the control
-      // Setting padding to 5 px will offset the control
-      // from the edge of the map
-      controlDiv.style.padding = '5px';
-
+    function legend() {
       // Set CSS for the control border
-      var controlUI = document.createElement('DIV');
-      controlUI.style.backgroundColor = 'white';
-      controlUI.style.opacity = '0.75';
-      controlUI.style.borderStyle = 'solid';
-      controlUI.style.borderWidth = '1px';
-      controlUI.title = 'Legend';
-
+      // var controlUI = document.createElement('DIV');
+      legendDiv.style.padding = '5px';
+      legendDiv.style.backgroundColor = 'white';
+      legendDiv.style.opacity = '0.75';
+      legendDiv.style.borderStyle = 'solid';
+      legendDiv.style.borderWidth = '1px';
+      
       // Set CSS for the control text
-      var controlText = document.createElement('DIV');
-      controlText.style.fontFamily = 'Arial,sans-serif';
-      controlText.style.fontSize = '12px';
-      controlText.style.paddingTop = '4px';
-      controlText.style.paddingLeft = '4px';
-      controlText.style.paddingRight = '4px';
+      legendDiv.style.fontFamily = 'Arial,sans-serif';
+      legendDiv.style.fontSize = '12px';
       
       // Add the text
-      controlText.innerHTML = '<p style="text-align:center;line-height:75%"><b>LEGEND</b></p>' +
+      legendDiv.innerHTML = '<p style="text-align:center;line-height:50%"><b>LEGEND</b></p>' +
         '<p><img src="' + destIconL + '" />' + '  Low-Wait Center</p>' +
         '<p><img src="' + destIconR + '" />' + '  Regular Center</p>' +
         '<p><img src="' + destIconC + '" />' + '  Childrens Center</p>';
-      
-      controlUI.appendChild(controlText);
-      controlDiv.appendChild(controlUI);
     }
     
     // Returns the longitude and latitude from a zip code
