@@ -14,7 +14,6 @@ This file is the main web application. This takes a zip code and finds the neare
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     <script src="google-spreadsheet-util.js"></script>
     <script src="retrieve-data-hardcoded.js"></script>
-    <!--<script src="retrieve-data.js"></script> -->
         
     <!-- Conflict b/w Bootstrap and Google Maps Info window styles problem, so this fixes it! -->
     <style type="text/css">
@@ -62,7 +61,6 @@ This file is the main web application. This takes a zip code and finds the neare
       setTimeout(function () { // give getCoordFromZip() 1 second to execute
         if ( zip_obj.sta != null ) {
           deleteOverlays();
-          //console && console.log(zip_obj.loc+','+zip_obj.lat+','+zip_obj.lng);
           addMarker(zip_obj, 'o');
           
           // find haversine distance b/w each low wait tx and zip
@@ -87,7 +85,6 @@ This file is the main web application. This takes a zip code and finds the neare
             tmp.web = ListAll[j].web;
             tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListAll[j].lng,ListAll[j].lat);
             oAll.push(tmp);
-            // console && console.log(tmp.dist_num );
           }
           
           // find haversine distance b/w each regular tx and zip
@@ -100,7 +97,6 @@ This file is the main web application. This takes a zip code and finds the neare
             tmp.web = ListKid[j].web;
             tmp.dist_num=haversine(zip_obj.lng,zip_obj.lat,ListKid[j].lng,ListKid[j].lat);
             oKid.push(tmp);
-            // console && console.log(tmp.dist_num );
           }
           
           var oLow_Sort = oLow.sort(function(a,b) { return parseFloat(a.dist_num) - parseFloat(b.dist_num) } );
@@ -113,7 +109,6 @@ This file is the main web application. This takes a zip code and finds the neare
             addMarker(oLow_Sort[i], 'l');
             addMarker(oAll_Sort[i], 'r');
             addMarker(oKid_Sort[i], 'c');
-            // console && console.log(oLow_Sort[i].dist_num + ' ' + oAll_Sort[i].dist_num + ' ' + oKid_Sort[i].dist_num);
           }
           map.fitBounds(bounds); //zoom based on the LatLngBounds object
           
@@ -213,7 +208,6 @@ This file is the main web application. This takes a zip code and finds the neare
       descrip.append("<br />VA hospitals are not included in our lists. Information about VA centers can be found <a href='http://www.va.gov/TRANSPLANT/' target='_blank'>here</a>.");
       descrip.append("<br />The map in this application is supported by Google Maps Javascript API V3, which has strict usage limitations.");// Querying too many zip codes in a short period of time can cause the application to fail. If this happens, refresh the page.");
       descrip.append("<br />'Distance' is computed through a heuristic formula that uses latitude and longitude information. (That is, this is not driving distance found on Google Maps, Yahoo! Maps, or MapQuest.)"); 
-      //descrip.append("<br />This application was developed and tested with Mozilla Firefox 22.0 and Google Chrome 28.0. For best results, use these browsers and enable JavaScript. We are working on fully supporting other web browsers across various devices.");
       
       var disclaim = $('#disclaimer');
       disclaim.append("OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
@@ -222,7 +216,6 @@ This file is the main web application. This takes a zip code and finds the neare
     // adding legend to the map
     function legend() {
       // Set CSS for the control border
-      // var controlUI = document.createElement('DIV');
       legendDiv.style.padding = '5px';
       legendDiv.style.backgroundColor = 'white';
       legendDiv.style.opacity = '0.75';

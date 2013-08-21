@@ -61,7 +61,6 @@ $(function(){
       ListKid.push(tmp);
     };
     buildKid = true;
-    // console.log(ListKid);
   };
 
   // this function controls when the form can be submitted.
