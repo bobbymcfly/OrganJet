@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 Bobby Nyotta - June 2013 - OrganJet
-This file is the main web application. This takes a zip code and finds the nearest kidney transplant centers.
+This file is the main web application. This takes a zip code and finds the nearest kidney OR liver transplant centers.
 -->
 <html>
   <head>
@@ -13,8 +13,10 @@ This file is the main web application. This takes a zip code and finds the neare
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8ndKa5KGrRbe6feO4v4M2dODOw8w5_Q0&sensor=false"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     <script src="google-spreadsheet-util.js"></script>
-    <script src="retrieve-data-hardcoded.js"></script>
-        
+    <script src="retrieve-data-hardcoded-kidney.js"></script>
+    <script src="retrieve-data-hardcoded-liver.js"></script>
+
+    
     <!-- Conflict b/w Bootstrap and Google Maps Info window styles problem, so this fixes it! -->
     <style type="text/css">
       img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: none; }
@@ -35,6 +37,7 @@ This file is the main web application. This takes a zip code and finds the neare
         ,destIconC = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=C|FFAA00|000000'
         ,originIcon = 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=.75|0|FFFF00|11|_|O'
         ,numOfLoc = 5
+        ,organ = ""
         ,legendDiv = document.createElement('DIV');
     
     legendDiv.id = "legend";
@@ -62,6 +65,16 @@ This file is the main web application. This takes a zip code and finds the neare
         if ( zip_obj.sta != null ) {
           deleteOverlays();
           addMarker(zip_obj, 'o');
+          
+          if (organ == "Liver") {
+            ListLow = ListLowLiver;
+            ListAll = ListAllLiver;
+            ListKid = ListKidLiver;
+          } else {
+            ListLow = ListLowKidney;
+            ListAll = ListAllKidney;
+            ListKid = ListKidKidney;
+          }
           
           // find haversine distance b/w each low wait tx and zip
           for (var j = 0; j < ListLow.length; j++) {
@@ -195,7 +208,7 @@ This file is the main web application. This takes a zip code and finds the neare
     // All of the text that comes below the results table is in here. This is not dynamic at all.
     function description() {
       var descrip = $('#description');
-      descrip.append("<p>We have provided the five closest kidney transplant locations with lowest median wait times along with five closest regular and children's transplant centers:</p>");
+      descrip.append("<p>We have provided the five closest transplant locations with lowest median wait times along with five closest regular and children's transplant centers:</p>");
       descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Green Pin - Locations of the closest low wait time transplant centers</li><li>Blue Pin - Locations of the closest regular transplant centers</li><li>Orange Pin - Locations of the closest children's transplant centers</li></ul>");
       descrip.append("<p>Information about 'Low Wait Time' centers:</p>");
       descrip.append("<ul><li>Transplant centers whose median wait times are well below (40% or more) the national median are called 'low wait time' centers. This median is computed based on data across various blood types. Please note that actual times for a patient can be significantly different (lower or higher) from median times.</li>" +
@@ -227,7 +240,7 @@ This file is the main web application. This takes a zip code and finds the neare
       legendDiv.style.fontSize = '12px';
       
       // Add the text
-      legendDiv.innerHTML = '<p style="text-align:center;line-height:50%"><b>LEGEND</b></p>' +
+      legendDiv.innerHTML = '<p style="text-align:center;line-height:50%"><b>LEGEND - ' + organ.toUpperCase() + '</b></p>' +
         '<p><img src="' + destIconL + '" />' + '  Low-Wait Center</p>' +
         '<p><img src="' + destIconR + '" />' + '  Regular Center</p>' +
         '<p><img src="' + destIconC + '" />' + '  Childrens Center</p>';
@@ -267,7 +280,7 @@ This file is the main web application. This takes a zip code and finds the neare
   </head>
   
   <body>
-    <h3 class="offset1">Find a Kidney Transplant Center with a Low Wait Time</h3>
+    <h3 class="offset1">Find a Kidney or Liver Transplant Center with a Low Wait Time</h3>
     <div class='row map-container'>
       <div class="span10 offset1" id="map-canvas"></div>
     </div>
@@ -275,7 +288,11 @@ This file is the main web application. This takes a zip code and finds the neare
       <div class="span6 offset3">
         <p>
           <form id="zipForm">
-            Enter Your Zip Code: <input id="zip" name="zip" type="text" maxlength="5"/>
+            Choose Organ: 
+            <input id="radioBubble" name="organ" type="radio" value="Kidney"/> Kidney
+            <input id="radioBubble" name="organ" type="radio" value="Liver"/> Liver<br>
+            Enter Your Zip Code: 
+            <input id="zip" name="zip" type="text" maxlength="5"/>
             <input id="execButton" name="buttonExecute" type="button" value="Find" class='btn' />
           </form> 
         </p>
@@ -309,10 +326,20 @@ This file is the main web application. This takes a zip code and finds the neare
           return true;
         }
       }
+      
+      function validateOrgans(organ) {
+        if (organ == null) {
+          alert("Please Select an Organ");
+          return false;
+        } else {
+          return true;
+        }
+      }      
 
       $("#zipForm").submit(function() {
         var zip = $('#zip').val();
-        if (validateZipInput(zip)) {
+        organ = $('input[name=organ]:checked','#zipForm').val();
+        if (validateZipInput(zip) && validateOrgans(organ)) {
           calculateDistances(zip);
         }
         return false;
@@ -320,7 +347,8 @@ This file is the main web application. This takes a zip code and finds the neare
       
       $('#execButton').on("click", function(){
         var zip = $('#zip').val();
-        if (validateZipInput(zip)) {
+        organ = $('input[name=organ]:checked','#zipForm').val();
+        if (validateZipInput(zip) && validateOrgans(organ)) {
           calculateDistances(zip);
         }
       })
