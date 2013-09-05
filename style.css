@@ -29,7 +29,7 @@ html, body {
   width: 20px;
 }
 .loc {
-  width: 550px
+  width: 550px;
 }
 .address {
   width: 300px;
@@ -37,8 +37,9 @@ html, body {
 #execButton {
   margin-bottom: 13px
 }
-#legend {
-  
+#radioBubble {
+  margin-bottom: 7px;
+  margin-left: 50px
 }
 #content{
     height: 100px;
