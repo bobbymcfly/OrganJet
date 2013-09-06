@@ -208,19 +208,22 @@ This file is the main web application. This takes a zip code and finds the neare
     // All of the text that comes below the results table is in here. This is not dynamic at all.
     function description() {
       var descrip = $('#description');
-      descrip.append("<p>We have provided the five closest transplant locations with lowest median wait times along with five closest regular and children's transplant centers:</p>");
+      descrip.append("<p>We have provided  five close centers with low median wait times (for kidneys) or high transplant rates (for livers) -- statistically significant compared to national median values --  along with the five closest regular and children's transplant centers:</p>");
       descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Green Pin - Locations of the closest low wait time transplant centers</li><li>Blue Pin - Locations of the closest regular transplant centers</li><li>Orange Pin - Locations of the closest children's transplant centers</li></ul>");
+      /*
       descrip.append("<p>Information about 'Low Wait Time' centers:</p>");
       descrip.append("<ul><li>Transplant centers whose median wait times are well below (40% or more) the national median are called 'low wait time' centers. This median is computed based on data across various blood types. Please note that actual times for a patient can be significantly different (lower or higher) from median times.</li>" +
       "<li>No distinction is made between centers that have median wait time of 19 months versus those that have 23 months. All centers listed in the 'low wait' column have median times lower than 26 months when the last SRTR report came out.</li>" +
       "<li>If a center in the low wait time category (Column 1) is also within 5 closest centers from an input ZIP code, then the column (Column 2) that has 'closest (regular) centers' will have the 6th closest one in that column (and so on). That is, the list on column 1 is mutually exclusive from list in column 2.</li>" +
       "<li>We have only selected centers in 'low wait times' that also have sufficiently high volumes and have satisfactory outcomes (using Observed/Expected ratio criteria).</li></ul>");
+      */
+      descrip.append("<p>Additional Notes:</p>");
       
-      descrip.append("The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.");
-      descrip.append("<br />If a geographically close transplant center is also a low wait time transplant center, it will only show up in the 'Low Wait Time' column.");
-      descrip.append("<br />VA hospitals are not included in our lists. Information about VA centers can be found <a href='http://www.va.gov/TRANSPLANT/' target='_blank'>here</a>.");
-      descrip.append("<br />The map in this application is supported by Google Maps Javascript API V3, which has strict usage limitations.");// Querying too many zip codes in a short period of time can cause the application to fail. If this happens, refresh the page.");
-      descrip.append("<br />'Distance' is computed through a heuristic formula that uses latitude and longitude information. (That is, this is not driving distance found on Google Maps, Yahoo! Maps, or MapQuest.)"); 
+      descrip.append("<ul><li>The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.</li>"
+      + "<li>If a geographically close transplant center is also a low wait time transplant center, it will only show up in the 'Low Wait Time' column.</li>"
+      + "<li>VA hospitals are not included in our lists. Information about VA centers can be found <a href='http://www.va.gov/TRANSPLANT/' target='_blank'>here</a>.</li>"
+      + "<li>The map in this application is supported by Google Maps Javascript API V3, which has strict usage limitations.</li>"
+      + "<li>'Distance' is computed through a heuristic formula that uses latitude and longitude information. (That is, this is not driving distance found on Google Maps, Yahoo! Maps, or MapQuest.)</li></ul>"); 
       
       var disclaim = $('#disclaimer');
       disclaim.append("OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
