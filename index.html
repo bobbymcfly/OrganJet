@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-Bobby Nyotta - June 2013 - OrganJet
-This file is the main web application. This takes a zip code and finds the nearest kidney OR liver transplant centers.
+Bobby Nyotta - 2013-2014 - OrganJet
+This takes a zip code and finds the nearest kidney OR liver transplant centers.
 -->
 <html>
   <head>
@@ -12,11 +12,9 @@ This file is the main web application. This takes a zip code and finds the neare
   
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4wPuoiB2LcNIlFG6ozwEvpNAL6BQRm9c&sensor=false"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-    <script src="google-spreadsheet-util.js"></script>
     <script src="retrieve-data-hardcoded-kidney.js"></script>
     <script src="retrieve-data-hardcoded-liver.js"></script>
-
-    
+		
     <!-- Conflict b/w Bootstrap and Google Maps Info window styles problem, so this fixes it! -->
     <style type="text/css">
       img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: none; }
@@ -59,9 +57,7 @@ This file is the main web application. This takes a zip code and finds the neare
     
     // returns closest 5 locations from each list and puts it into the table
     function calculateDistances(z) {
-      getCoordFromZip(z);
-
-      setTimeout(function () { // give getCoordFromZip() 1 second to execute
+      getCoordFromZip(z, function(){ // give getCoordFromZip() 1 second to execute
         if ( zip_obj.sta != null ) {
           deleteOverlays();
           addMarker(zip_obj, 'o');
@@ -127,12 +123,17 @@ This file is the main web application. This takes a zip code and finds the neare
           
           var thead = $('#results-table thead');
           thead.append("<tr><th class='num'>No.</th><th class='loc'>Low Wait Time Transplant Center</th><th class='address'>Address</th><th class='loc'>Regular Transplant Center</th><th class='address'>Address</th><th class='loc'>Children's Transplant Center</th><th class='address'>Address</th></tr>");
+					$('#results-table').show();
+					
           description();
           
           // Create the legend and display on the map
           legend();
+					addCircle(3);
+					addCircle(2);
+					addCircle(1);
         }
-      },1000);
+      });//,1000);
     }
     
     // adds markers to the map
@@ -167,7 +168,26 @@ This file is the main web application. This takes a zip code and finds the neare
       markersArray.push(marker); // add marker to array
       bounds.extend(new google.maps.LatLng(obj.lat, obj.lng)); // add marker location to bounds object (for zoom)
     }
-    
+		
+		// adds circles to the map
+		function addCircle(hours) {
+			var color = '#FF0000';
+			if (Math.ceil(hours) == 1) {color = '#00FF00'}
+			else if (Math.ceil(hours) == 2) {color = '#FFFF00'}
+			else if (Math.ceil(hours) == 3) {color = '#FF0000'}
+      var circle = new google.maps.Circle({
+				strokeColor: color,
+				strokeOpacity: 0.15,
+				strokeWeight: 2,
+				fillColor: color,
+				fillOpacity: 0.15,
+				map: map,
+				center: new google.maps.LatLng(zip_obj.lat, zip_obj.lng), 
+				radius: hours*595457
+      });
+			markersArray.push(circle); // add circle to array
+		}
+		
     // clears map of pins; clears table and text
     function deleteOverlays() {
       oLow = new Array();
@@ -210,13 +230,8 @@ This file is the main web application. This takes a zip code and finds the neare
       var descrip = $('#description');
       descrip.append("<p>We have provided  five close centers with low median wait times (for kidneys) or high transplant rates (for livers) -- statistically significant compared to national median values --  along with the five closest regular and children's transplant centers:</p>");
       descrip.append("<ul><li>Yellow Pin - Location of Your Zip Code</li><li>Green Pin - Locations of the closest low wait time transplant centers</li><li>Blue Pin - Locations of the closest regular transplant centers</li><li>Orange Pin - Locations of the closest children's transplant centers</li></ul>");
-      /*
-      descrip.append("<p>Information about 'Low Wait Time' centers:</p>");
-      descrip.append("<ul><li>Transplant centers whose median wait times are well below (40% or more) the national median are called 'low wait time' centers. This median is computed based on data across various blood types. Please note that actual times for a patient can be significantly different (lower or higher) from median times.</li>" +
-      "<li>No distinction is made between centers that have median wait time of 19 months versus those that have 23 months. All centers listed in the 'low wait' column have median times lower than 26 months when the last SRTR report came out.</li>" +
-      "<li>If a center in the low wait time category (Column 1) is also within 5 closest centers from an input ZIP code, then the column (Column 2) that has 'closest (regular) centers' will have the 6th closest one in that column (and so on). That is, the list on column 1 is mutually exclusive from list in column 2.</li>" +
-      "<li>We have only selected centers in 'low wait times' that also have sufficiently high volumes and have satisfactory outcomes (using Observed/Expected ratio criteria).</li></ul>");
-      */
+			descrip.append("<p>The concentric circles show areas that are approximately one, two, and three hour flying times from your home zip code.</p>");
+
       descrip.append("<p>Additional Notes:</p>");
       
       descrip.append("<ul><li>The transplant center locations were obtained from <a href='http://www.srtr.org' target='_blank'>Scientific Registry of Transplant Recipients</a>.</li>"
@@ -227,6 +242,8 @@ This file is the main web application. This takes a zip code and finds the neare
       
       var disclaim = $('#disclaimer');
       disclaim.append("OrganJet and GuardianWings do not provide medical advice. All information presented here is for educational/awareness purposes only. Please consult your physician before taking any action. Every effort has been made to furnish accurate and most up to date summarized data based on publicly available information.");
+			
+			$('#post-table-text').show();
     }
 
     // adding legend to the map
@@ -251,7 +268,7 @@ This file is the main web application. This takes a zip code and finds the neare
     
     // Returns the longitude and latitude from a zip code
     // Also contains some validation
-    function getCoordFromZip(z) {
+    function getCoordFromZip(z, afterResultParsing) {
       geocoder.geocode( { 'address': z}, function(results, status) {
         if (status != "OK") { // make sure zip code is valid
           zip_obj.name=null;
@@ -274,6 +291,7 @@ This file is the main web application. This takes a zip code and finds the neare
           zip_obj.lat=results[0].geometry.location.lat();
           zip_obj.sta=status;
         }
+				afterResultParsing();
       });
     }
     
@@ -303,14 +321,14 @@ This file is the main web application. This takes a zip code and finds the neare
     </div>
     <div class='row'>
       <div class="span10 offset1">
-        <table id="results-table" class='table table-striped table-bordered table-hover table-condensed'>
+        <table id="results-table" class='hide table table-striped table-bordered table-hover table-condensed'>
           <thead></thead>
           <tbody></tbody>
         </table>
       </div>
     </div>
-    <div class='row'>
-      <div class="span10 offset1 well">
+    <div class='row'> <!-- contains post-table text div's-->  
+      <div id="post-table-text" class="hide span10 offset1 well">
         <p id="description"></p>
         <p id="disclaimer"></p>
       </div>
