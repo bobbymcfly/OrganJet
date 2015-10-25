@@ -159,7 +159,7 @@ This takes a zip code and finds the nearest kidney OR liver transplant centers.
       // add pop-up window to markers that works on click
       marker.infowindow = new google.maps.InfoWindow({
         content: "<div id='content'><style='font-size:12px;>" + "<a href='" + obj.web + "' target='_blank' >" + obj.name + "</a><br>" + obj.add + "</></div>"
-        ,maxWidth: 0
+        //,maxWidth: 0
       });
       google.maps.event.addListener(marker, 'click', function() {
         marker.infowindow.open(map, marker);

@@ -3,9 +3,9 @@
 
 $(function(){
   // URL's of 
-  var urlLow = "https://docs.google.com/spreadsheet/pub?key=0AnXwFXnaI9vWdG9rOUQ5Qk9YRFg3NXdfcHdrNV9QVHc&single=true&gid=2&output=csv";
-  var urlAll = "https://docs.google.com/spreadsheet/pub?key=0AnXwFXnaI9vWdG9rOUQ5Qk9YRFg3NXdfcHdrNV9QVHc&single=true&gid=0&output=csv";
-  var urlKid = "https://docs.google.com/spreadsheet/pub?key=0AnXwFXnaI9vWdG9rOUQ5Qk9YRFg3NXdfcHdrNV9QVHc&single=true&gid=1&output=csv";
+  var urlLow = "https://docs.google.com/spreadsheet/pub?key=AIzaSyD4wPuoiB2LcNIlFG6ozwEvpNAL6BQRm9c&single=true&gid=2&output=csv";
+  var urlAll = "https://docs.google.com/spreadsheet/pub?key=AIzaSyD4wPuoiB2LcNIlFG6ozwEvpNAL6BQRm9c&single=true&gid=0&output=csv";
+  var urlKid = "https://docs.google.com/spreadsheet/pub?key=AIzaSyD4wPuoiB2LcNIlFG6ozwEvpNAL6BQRm9c&single=true&gid=1&output=csv";
   
   // boolean variables to control when webpage can be executed;
   var buildLow;
